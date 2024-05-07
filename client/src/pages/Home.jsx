@@ -1,15 +1,4 @@
-import React from "react";
-import {
-  Button,
-  Switch,
-  Paper,
-  Box,
-  ButtonGroup,
-  Input,
-  TextField,
-  Container,
-  Typography,
-} from "@mui/material";
+import { Button, Paper, Box, Container, Typography } from "@mui/material";
 
 function Home() {
   return (
@@ -39,10 +28,8 @@ function Home() {
           gap={2}
         >
           <Button variant="contained">Create Room</Button>
-          <ButtonGroup variant="contained">
-            <TextField placeholder="ID" />
-            <Button variant="contained">Join room</Button>
-          </ButtonGroup>
+          <Button variant="contained">Join room</Button>
+          <Button variant="contained">Play Locally</Button>
           <Button variant="contained" color="primary" disabled>
             Play VS BOT
           </Button>

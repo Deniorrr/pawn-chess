@@ -2,8 +2,9 @@ import "./styles/App.css";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { brown, lime } from "@mui/material/colors";
-import Home from "./pages/Home";
-import Room from "./pages/Room";
+// import Home from "./pages/Home";
+// import Room from "./pages/Room";
+import LocalGame from "./pages/LocalGame";
 
 function App() {
   const theme = createTheme({
@@ -16,7 +17,7 @@ function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <Room />
+        <LocalGame />
       </ThemeProvider>
     </>
   );
