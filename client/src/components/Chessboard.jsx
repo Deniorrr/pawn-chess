@@ -5,6 +5,7 @@ import k from "../assets/k.svg";
 import kw from "../assets/kw.svg";
 import p from "../assets/p.svg";
 import pw from "../assets/pw.svg";
+import { findLegalMoves } from "../utils/findLegalMoves";
 
 function Chessboard() {
   const initialBoard = [
@@ -45,7 +46,7 @@ function Chessboard() {
       if (board[i][j] === " ") {
         return;
       }
-      findLegalMoves(i, j);
+      setLegalMoves(findLegalMoves(i, j, board));
       return setSelectedPiece([i, j]);
     }
     if (legalMoves.find((move) => areObjectsSame(move, [i, j]))) {
@@ -55,12 +56,20 @@ function Chessboard() {
     setSelectedPiece(null);
   };
 
-  const findLegalMoves = (i, j) => {
-    let moves = [];
-    moves.push([i - 1, j]);
-    moves.push([i - 2, j]);
-    setLegalMoves([...moves]);
-  };
+  // const findLegalMoves = (i, j) => {
+  //   // let moves = [];
+  //   // let piece = board[i][j];
+  //   // console.log(piece);
+  //   // if (piece === "k") {
+  //   //   moves.push([i - 1, j - 1]);
+  //   //   moves.push([i - 1, j + 1]);
+  //   //   moves.push([i + 1, j - 1]);
+  //   //   moves.push([i + 1, j + 1]);
+  //   //   setLegalMoves([...moves]);
+  //   //   return;
+  //   // }
+  //   setLegalMoves(findLegalMoves(i, j, board));
+  // };
 
   const movePiece = (i, j) => {
     board[i][j] = board[selectedPiece[0]][selectedPiece[1]];
