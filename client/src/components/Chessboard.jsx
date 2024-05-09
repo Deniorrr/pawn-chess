@@ -20,7 +20,7 @@ function Chessboard() {
   ];
 
   const [isWhiteTurn, setIsWhiteTurn] = useState(true);
-
+  const [isBoardRotated, setIsBoardRotated] = useState(false);
   const [legalMoves, setLegalMoves] = useState([]);
 
   const [cellSize, setCellSize] = useState(60);
@@ -115,6 +115,10 @@ function Chessboard() {
     setSelectedPiece(null);
   };
 
+  const rotateChessboard = () => {
+    setIsBoardRotated(!isBoardRotated);
+  };
+
   return (
     <Paper elevation={0}>
       <Grid container spacing={1} my={1}>
@@ -133,9 +137,20 @@ function Chessboard() {
             -
           </Button>
         </Grid>
+        <Grid item>
+          <Button variant="contained" onClick={() => rotateChessboard()}>
+            Rotate chessboard
+          </Button>
+        </Grid>
       </Grid>
       <Grid container aria-label="chessboard wrapper">
-        <Paper elevation={24}>
+        <Paper
+          elevation={24}
+          style={{
+            transform: isBoardRotated ? "rotate(180deg)" : "none",
+            transition: "transform 0.5s",
+          }}
+        >
           {board.map((row, i) => (
             <Grid container key={i}>
               {row.map((piece, j) => (
@@ -151,6 +166,8 @@ function Chessboard() {
                       alignItems: "center",
                       boxSizing: "border-box",
                       border: generateBorder(i, j),
+                      transform: isBoardRotated ? "rotate(-180deg)" : "none",
+                      transition: "transform 0.5s",
                     }}
                     onClick={() => selectPiece(i, j)}
                   >
