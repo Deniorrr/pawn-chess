@@ -72,6 +72,43 @@ function Chessboard() {
   // };
 
   const movePiece = (i, j) => {
+    //clean previous en passant
+    if (
+      board[selectedPiece[0]][selectedPiece[1]] === "P" &&
+      board[i][j] === "-"
+    ) {
+      board[i + 1][j] = " ";
+    }
+    if (
+      board[selectedPiece[0]][selectedPiece[1]] === "p" &&
+      board[i][j] === "-"
+    ) {
+      board[i - 1][j] = " ";
+    }
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        if (board[row][col] === "-") {
+          board[row][col] = " ";
+        }
+      }
+    }
+    //add en passant
+    if (selectedPiece[0] === 1 && i === 3) {
+      board[2][j] = "-";
+    }
+    if (selectedPiece[0] === 6 && i === 4) {
+      board[5][j] = "-";
+    }
+
+    //check if player uses en passant
+    // if (
+    //   board[selectedPiece[0]][selectedPiece[1]] === "p" &&
+    //   board[i][j] === "-"
+    // ) {
+    //   console.log("en passant");
+    //   board[i - 1][j] = " ";
+    // }
+
     board[i][j] = board[selectedPiece[0]][selectedPiece[1]];
     board[selectedPiece[0]][selectedPiece[1]] = " ";
     setSelectedPiece(null);
@@ -104,7 +141,7 @@ function Chessboard() {
       case "P":
         return <img src={pw} alt="pw" style={{ width: "100%" }} />;
       default:
-        return null;
+        return `${piece}`;
     }
   };
 
