@@ -151,6 +151,19 @@ const whitePawnMoves = (i, j, board) => {
   return moves;
 };
 
+const isWhiteChecked = (board) => {
+  let whiteKingPos = [];
+  board.forEach((row, i) => {
+    row.forEach((cell, j) => {
+      if (cell === "K") whiteKingPos = [i, j];
+    });
+  });
+  // DODAĆ JEŚLI OUT OF BOUNDS!!!!!!
+  if (board[whiteKingPos[0] - 1][whiteKingPos[1] - 1] === "p") return true;
+  if (board[whiteKingPos[0] - 1][whiteKingPos[1] + 1] === "p") return true;
+  return false;
+};
+
 //TODO
 // checked king
 // checkmate

@@ -5,7 +5,8 @@ import k from "../assets/k.svg";
 import kw from "../assets/kw.svg";
 import p from "../assets/p.svg";
 import pw from "../assets/pw.svg";
-import { findLegalMoves } from "../utils/findLegalMoves";
+import { findLegalMoves } from "../utils/gameLogic/findLegalMoves";
+import { generateBoardAfterMove } from "../utils/gameLogic/generateBoardAfterMove";
 
 function Chessboard() {
   const initialBoard = [
@@ -72,45 +73,37 @@ function Chessboard() {
   // };
 
   const movePiece = (i, j) => {
-    //clean previous en passant
-    if (
-      board[selectedPiece[0]][selectedPiece[1]] === "P" &&
-      board[i][j] === "-"
-    ) {
-      board[i + 1][j] = " ";
-    }
-    if (
-      board[selectedPiece[0]][selectedPiece[1]] === "p" &&
-      board[i][j] === "-"
-    ) {
-      board[i - 1][j] = " ";
-    }
-    for (let row = 0; row < 8; row++) {
-      for (let col = 0; col < 8; col++) {
-        if (board[row][col] === "-") {
-          board[row][col] = " ";
-        }
-      }
-    }
-    //add en passant
-    if (selectedPiece[0] === 1 && i === 3) {
-      board[2][j] = "-";
-    }
-    if (selectedPiece[0] === 6 && i === 4) {
-      board[5][j] = "-";
-    }
-
-    //check if player uses en passant
+    setBoard(generateBoardAfterMove(board, selectedPiece, [i, j]));
+    // if (
+    //   board[selectedPiece[0]][selectedPiece[1]] === "P" &&
+    //   board[i][j] === "-"
+    // ) {
+    //   board[i + 1][j] = " ";
+    // }
     // if (
     //   board[selectedPiece[0]][selectedPiece[1]] === "p" &&
     //   board[i][j] === "-"
     // ) {
-    //   console.log("en passant");
     //   board[i - 1][j] = " ";
     // }
+    // //clean previous en passant
+    // for (let row = 0; row < 8; row++) {
+    //   for (let col = 0; col < 8; col++) {
+    //     if (board[row][col] === "-") {
+    //       board[row][col] = " ";
+    //     }
+    //   }
+    // }
+    // //add en passant
+    // if (selectedPiece[0] === 1 && i === 3) {
+    //   board[2][j] = "-";
+    // }
+    // if (selectedPiece[0] === 6 && i === 4) {
+    //   board[5][j] = "-";
+    // }
 
-    board[i][j] = board[selectedPiece[0]][selectedPiece[1]];
-    board[selectedPiece[0]][selectedPiece[1]] = " ";
+    // board[i][j] = board[selectedPiece[0]][selectedPiece[1]];
+    // board[selectedPiece[0]][selectedPiece[1]] = " ";
     setSelectedPiece(null);
     setLegalMoves([]);
     setBoard([...board]);
@@ -189,7 +182,7 @@ function Chessboard() {
           }}
         >
           {board.map((row, i) => (
-            <Grid container key={i}>
+            <Grid container key={i} style={{ flexWrap: "nowrap" }}>
               {row.map((piece, j) => (
                 <Grid item key={j}>
                   <Paper

@@ -1,5 +1,4 @@
 import { Container, Typography, Paper, Box } from "@mui/material";
-import React from "react";
 
 function Room() {
   return (
