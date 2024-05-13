@@ -14,6 +14,18 @@ function LocalGame() {
     }
   };
 
+  const endViaCheckmate = (color) => {
+    if (color === "white") {
+      console.log("White wins");
+    } else {
+      console.log("Black wins");
+    }
+  };
+
+  const endViaStalemate = () => {
+    console.log("PAT");
+  };
+
   return (
     <Container>
       <Paper elevation={12} style={{ padding: 20 }}>
@@ -22,7 +34,11 @@ function LocalGame() {
         </Typography>
         <Grid container spacing={1} my={1}>
           <Grid item>
-            <Chessboard addPoint={addPoint} />
+            <Chessboard
+              addPoint={addPoint}
+              endViaCheckmate={endViaCheckmate}
+              endViaStalemate={endViaStalemate}
+            />
           </Grid>
           <Grid item>
             <Paper elevation={3} aria-label="scores">

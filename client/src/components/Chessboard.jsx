@@ -9,30 +9,40 @@ import { findLegalMoves } from "../utils/gameLogic/findLegalMoves";
 import { generateBoardAfterMove } from "../utils/gameLogic/generateBoardAfterMove";
 import { isWhiteChecked } from "../utils/gameLogic/isWhiteChecked";
 import { isBlackChecked } from "../utils/gameLogic/isBlackChecked";
+import PropTypes from "prop-types";
+
+Chessboard.propTypes = {
+  addPoint: PropTypes.func.isRequired,
+  endViaCheckmate: PropTypes.func.isRequired,
+  endViaStalemate: PropTypes.func.isRequired,
+};
 
 function Chessboard(props) {
   const addPoint = props.addPoint;
-  const initialBoard = [
-    [" ", " ", " ", " ", "k", " ", " ", " "],
-    ["p", "p", "p", "p", "p", "p", "p", "p"],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    ["P", "P", "P", "P", "P", "P", "P", "P"],
-    [" ", " ", " ", " ", "K", " ", " ", " "],
-  ];
+  const endViaCheckmate = props.endViaCheckmate;
+  const endViaStalemate = props.endViaStalemate;
 
   // const initialBoard = [
   //   [" ", " ", " ", " ", "k", " ", " ", " "],
-  //   [" ", " ", " ", " ", "p", " ", " ", " "],
-  //   [" ", " ", " ", "P", "K", " ", " ", " "],
+  //   ["p", "p", "p", "p", "p", "p", "p", "p"],
   //   [" ", " ", " ", " ", " ", " ", " ", " "],
   //   [" ", " ", " ", " ", " ", " ", " ", " "],
   //   [" ", " ", " ", " ", " ", " ", " ", " "],
   //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   ["P", "P", "P", "P", "P", "P", "P", "P"],
+  //   [" ", " ", " ", " ", "K", " ", " ", " "],
   // ];
+
+  const initialBoard = [
+    [" ", " ", " ", " ", "k", " ", " ", " "],
+    [" ", " ", " ", " ", "p", " ", " ", " "],
+    [" ", " ", " ", "P", "K", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+  ];
 
   const [isWhiteTurn, setIsWhiteTurn] = useState(true);
   const [isBoardRotated, setIsBoardRotated] = useState(false);
@@ -99,24 +109,37 @@ function Chessboard(props) {
     if (isWhiteTurn) {
       if (!hasMoves) {
         if (isWhiteChecked(board)) {
-          console.log("Black wins");
+          endViaCheckmate("black");
         } else {
-          console.log("PAT");
+          endViaStalemate();
         }
       }
     } else {
       if (!hasMoves) {
         if (isBlackChecked(board)) {
-          console.log("White wins");
+          endViaCheckmate("white");
         } else {
-          console.log("PAT");
+          endViaStalemate();
         }
       }
     }
   };
 
+  const isMaterialDraw = () => {
+    const whitePieces = board
+      .flat()
+      .filter((piece) => "PK".includes(piece)).length;
+    const blackPieces = board
+      .flat()
+      .filter((piece) => "pk".includes(piece)).length;
+    if (whitePieces === 1 && blackPieces === 1) {
+      endViaStalemate();
+    }
+  };
+
   useEffect(() => {
     isCheckmateOrStalemate();
+    isMaterialDraw();
   }, [board]);
 
   const movePiece = (i, j) => {
