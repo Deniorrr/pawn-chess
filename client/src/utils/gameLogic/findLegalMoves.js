@@ -104,25 +104,34 @@ const whiteKingMoves = (i, j, board) => {
       )
     ) {
       // console.log(board, move[0], move[1]);
-      if (move[0] >= 0 && move[0] < 8 && move[1] >= 0 && move[1] < 8) {
-        if (board[move[0]][move[1]] !== "P") {
-          if (
-            move[0] - 1 >= 0 &&
-            move[1] - 1 >= 0 &&
-            move[0] + 1 < 8 &&
-            move[1] + 1 < 8
-          ) {
-            if (
-              // check if move is not attacked by a white pawn
-              board[move[0] - 1][move[1] + 1] !== "p" &&
-              board[move[0] - 1][move[1] - 1] !== "p"
-            )
-              addMove(board, moves, [i, j], move, true);
-          } else {
+      // if (move[0] >= 0 && move[0] < 8 && move[1] >= 0 && move[1] < 8) {
+      //   if (board[move[0]][move[1]] !== "P") {
+      //     if (
+      //       move[0] - 1 >= 0 &&
+      //       move[1] - 1 >= 0 &&
+      //       move[0] + 1 < 8 &&
+      //       move[1] + 1 < 8
+      //     ) {
+      //       if (
+      //         // check if move is not attacked by a white pawn
+      //         board[move[0] - 1][move[1] + 1] !== "p" &&
+      //         board[move[0] - 1][move[1] - 1] !== "p"
+      //       )
+      //         addMove(board, moves, [i, j], move, true);
+      //     } else {
+      //       addMove(board, moves, [i, j], move, true);
+      //     }
+      //   }
+      // }
+
+      //i'm checking this somewher else
+      if (move[0] >= 0 && move[0] < 8 && move[1] >= 0 && move[1] < 8)
+        if (
+          board[move[0] - 1][move[1] + 1] !== "p" &&
+          board[move[0] - 1][move[1] - 1] !== "p"
+        )
+          if (board[move[0]][move[1]] !== "P")
             addMove(board, moves, [i, j], move, true);
-          }
-        }
-      }
     }
   });
   return moves;
@@ -173,8 +182,10 @@ const isWhiteChecked = (board) => {
       if (cell === "K") whiteKingPos = [i, j];
     });
   });
-  if (board[whiteKingPos[0] - 1][whiteKingPos[1] - 1] === "p") return true;
-  if (board[whiteKingPos[0] - 1][whiteKingPos[1] + 1] === "p") return true;
+  if (whiteKingPos[0] - 1 >= 0 && whiteKingPos[1] - 1 >= 0)
+    if (board[whiteKingPos[0] - 1][whiteKingPos[1] - 1] === "p") return true;
+  if (whiteKingPos[0] - 1 >= 0 && whiteKingPos[1] + 1 < 8)
+    if (board[whiteKingPos[0] - 1][whiteKingPos[1] + 1] === "p") return true;
   return false;
 };
 const isBlackChecked = (board) => {
@@ -184,8 +195,10 @@ const isBlackChecked = (board) => {
       if (cell === "k") blackKingPos = [i, j];
     });
   });
-  if (board[blackKingPos[0] + 1][blackKingPos[1] - 1] === "P") return true;
-  if (board[blackKingPos[0] + 1][blackKingPos[1] + 1] === "P") return true;
+  if (blackKingPos[0] + 1 < 8 && blackKingPos[1] - 1 >= 0)
+    if (board[blackKingPos[0] + 1][blackKingPos[1] - 1] === "P") return true;
+  if (blackKingPos[0] + 1 < 8 && blackKingPos[1] + 1 < 8)
+    if (board[blackKingPos[0] + 1][blackKingPos[1] + 1] === "P") return true;
   return false;
 };
 
