@@ -28,6 +28,12 @@ export const generateBoardAfterMove = (board, selectedPiece, toPos) => {
   if (selectedPiece[0] === 6 && i === 4) {
     board[5][j] = "-";
   }
+  if (board[selectedPiece[0]][selectedPiece[1]] === "P" && i === 0) {
+    board[selectedPiece[0]][selectedPiece[1]] = " ";
+  }
+  if (board[selectedPiece[0]][selectedPiece[1]] === "p" && i === 7) {
+    board[selectedPiece[0]][selectedPiece[1]] = " ";
+  }
   //move the actual piece
   board[i][j] = board[selectedPiece[0]][selectedPiece[1]];
   board[selectedPiece[0]][selectedPiece[1]] = " ";

@@ -1,5 +1,5 @@
 import { Button, Grid, Paper } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { brown } from "@mui/material/colors";
 import k from "../assets/k.svg";
 import kw from "../assets/kw.svg";
@@ -7,8 +7,11 @@ import p from "../assets/p.svg";
 import pw from "../assets/pw.svg";
 import { findLegalMoves } from "../utils/gameLogic/findLegalMoves";
 import { generateBoardAfterMove } from "../utils/gameLogic/generateBoardAfterMove";
+import { isWhiteChecked } from "../utils/gameLogic/isWhiteChecked";
+import { isBlackChecked } from "../utils/gameLogic/isBlackChecked";
 
-function Chessboard() {
+function Chessboard(props) {
+  const addPoint = props.addPoint;
   const initialBoard = [
     [" ", " ", " ", " ", "k", " ", " ", " "],
     ["p", "p", "p", "p", "p", "p", "p", "p"],
@@ -20,11 +23,22 @@ function Chessboard() {
     [" ", " ", " ", " ", "K", " ", " ", " "],
   ];
 
+  // const initialBoard = [
+  //   [" ", " ", " ", " ", "k", " ", " ", " "],
+  //   [" ", " ", " ", " ", "p", " ", " ", " "],
+  //   [" ", " ", " ", "P", "K", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  // ];
+
   const [isWhiteTurn, setIsWhiteTurn] = useState(true);
   const [isBoardRotated, setIsBoardRotated] = useState(false);
   const [legalMoves, setLegalMoves] = useState([]);
 
-  const [cellSize, setCellSize] = useState(60);
+  const [cellSize, setCellSize] = useState(85);
   const [board, setBoard] = useState(initialBoard);
   const [selectedPiece, setSelectedPiece] = useState(null);
 
@@ -57,56 +71,62 @@ function Chessboard() {
     setSelectedPiece(null);
   };
 
-  // const findLegalMoves = (i, j) => {
-  //   // let moves = [];
-  //   // let piece = board[i][j];
-  //   // console.log(piece);
-  //   // if (piece === "k") {
-  //   //   moves.push([i - 1, j - 1]);
-  //   //   moves.push([i - 1, j + 1]);
-  //   //   moves.push([i + 1, j - 1]);
-  //   //   moves.push([i + 1, j + 1]);
-  //   //   setLegalMoves([...moves]);
-  //   //   return;
-  //   // }
-  //   setLegalMoves(findLegalMoves(i, j, board));
-  // };
+  const hasAnyMoves = () => {
+    let result = false;
+    if (isWhiteTurn) {
+      board.some((row, i) => {
+        row.some((cell, j) => {
+          if ("PK".includes(cell) && findLegalMoves(i, j, board).length > 0) {
+            result = true;
+          }
+        });
+      });
+    }
+    if (!isWhiteTurn) {
+      board.some((row, i) => {
+        row.some((cell, j) => {
+          if ("pk".includes(cell) && findLegalMoves(i, j, board).length > 0) {
+            result = true;
+          }
+        });
+      });
+    }
+    return result;
+  };
+
+  const isCheckmateOrStalemate = () => {
+    const hasMoves = hasAnyMoves();
+    if (isWhiteTurn) {
+      if (!hasMoves) {
+        if (isWhiteChecked(board)) {
+          console.log("Black wins");
+        } else {
+          console.log("PAT");
+        }
+      }
+    } else {
+      if (!hasMoves) {
+        if (isBlackChecked(board)) {
+          console.log("White wins");
+        } else {
+          console.log("PAT");
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    isCheckmateOrStalemate();
+  }, [board]);
 
   const movePiece = (i, j) => {
-    setBoard(generateBoardAfterMove(board, selectedPiece, [i, j]));
-    // if (
-    //   board[selectedPiece[0]][selectedPiece[1]] === "P" &&
-    //   board[i][j] === "-"
-    // ) {
-    //   board[i + 1][j] = " ";
-    // }
-    // if (
-    //   board[selectedPiece[0]][selectedPiece[1]] === "p" &&
-    //   board[i][j] === "-"
-    // ) {
-    //   board[i - 1][j] = " ";
-    // }
-    // //clean previous en passant
-    // for (let row = 0; row < 8; row++) {
-    //   for (let col = 0; col < 8; col++) {
-    //     if (board[row][col] === "-") {
-    //       board[row][col] = " ";
-    //     }
-    //   }
-    // }
-    // //add en passant
-    // if (selectedPiece[0] === 1 && i === 3) {
-    //   board[2][j] = "-";
-    // }
-    // if (selectedPiece[0] === 6 && i === 4) {
-    //   board[5][j] = "-";
-    // }
-
-    // board[i][j] = board[selectedPiece[0]][selectedPiece[1]];
-    // board[selectedPiece[0]][selectedPiece[1]] = " ";
+    if (board[selectedPiece[0]][selectedPiece[1]] === "P" && i === 0)
+      addPoint("white");
+    if (board[selectedPiece[0]][selectedPiece[1]] === "p" && i === 7)
+      addPoint("black");
+    setBoard(generateBoardAfterMove([...board], selectedPiece, [i, j]));
     setSelectedPiece(null);
     setLegalMoves([]);
-    setBoard([...board]);
     setIsWhiteTurn(!isWhiteTurn);
   };
 

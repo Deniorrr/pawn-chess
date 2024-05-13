@@ -1,4 +1,6 @@
 import { generateBoardAfterMove } from "./generateBoardAfterMove";
+import { isWhiteChecked } from "./isWhiteChecked";
+import { isBlackChecked } from "./isBlackChecked";
 
 let piece;
 
@@ -127,7 +129,7 @@ const whiteKingMoves = (i, j, board) => {
       //i'm checking this somewher else
       if (move[0] >= 0 && move[0] < 8 && move[1] >= 0 && move[1] < 8)
         if (
-          board[move[0] - 1][move[1] + 1] !== "p" &&
+          board[move[0] - 1][move[1] + 1] !== "p" && //DEBUG THIS
           board[move[0] - 1][move[1] - 1] !== "p"
         )
           if (board[move[0]][move[1]] !== "P")
@@ -139,12 +141,13 @@ const whiteKingMoves = (i, j, board) => {
 
 const blackPawnMoves = (i, j, board) => {
   let moves = [];
-  if (board[i + 1][j] === " ")
+  if (board[i + 1][j] === " ") {
     //moves.push([i + 1, j]); // move one step forward
     addMove(board, moves, [i, j], [i + 1, j], false);
-  if (i === 1 && board[i + 2][j] === " ")
-    //moves.push([i + 2, j]); // move two steps forward
-    addMove(board, moves, [i, j], [i + 2, j], false);
+    if (i === 1 && board[i + 2][j] === " ")
+      //moves.push([i + 2, j]); // move two steps forward
+      addMove(board, moves, [i, j], [i + 2, j], false);
+  }
   if (i + 1 < 8 && j + 1 < 8)
     if (board[i + 1][j + 1] === "P" || board[i + 1][j + 1] === "-")
       addMove(board, moves, [i, j], [i + 1, j + 1], false);
@@ -158,12 +161,13 @@ const blackPawnMoves = (i, j, board) => {
 
 const whitePawnMoves = (i, j, board) => {
   let moves = [];
-  if (board[i - 1][j] === " ")
+  if (board[i - 1][j] === " ") {
     //moves.push([i - 1, j]); // move one step forward
     addMove(board, moves, [i, j], [i - 1, j], true);
-  if (i === 6 && board[i - 2][j] === " ")
-    //moves.push([i - 2, j]); // move two steps forward
-    addMove(board, moves, [i, j], [i - 2, j], true);
+    if (i === 6 && board[i - 2][j] === " ")
+      //moves.push([i - 2, j]); // move two steps forward
+      addMove(board, moves, [i, j], [i - 2, j], true);
+  }
   if (i - 1 >= 0 && j + 1 < 8)
     if (board[i - 1][j + 1] === "p" || board[i - 1][j + 1] === "-")
       //moves.push([i - 1, j + 1]); // attack right
@@ -173,33 +177,6 @@ const whitePawnMoves = (i, j, board) => {
       //moves.push([i - 1, j - 1]); // attack left
       addMove(board, moves, [i, j], [i - 1, j - 1], true);
   return moves;
-};
-
-const isWhiteChecked = (board) => {
-  let whiteKingPos = [];
-  board.forEach((row, i) => {
-    row.forEach((cell, j) => {
-      if (cell === "K") whiteKingPos = [i, j];
-    });
-  });
-  if (whiteKingPos[0] - 1 >= 0 && whiteKingPos[1] - 1 >= 0)
-    if (board[whiteKingPos[0] - 1][whiteKingPos[1] - 1] === "p") return true;
-  if (whiteKingPos[0] - 1 >= 0 && whiteKingPos[1] + 1 < 8)
-    if (board[whiteKingPos[0] - 1][whiteKingPos[1] + 1] === "p") return true;
-  return false;
-};
-const isBlackChecked = (board) => {
-  let blackKingPos = [];
-  board.forEach((row, i) => {
-    row.forEach((cell, j) => {
-      if (cell === "k") blackKingPos = [i, j];
-    });
-  });
-  if (blackKingPos[0] + 1 < 8 && blackKingPos[1] - 1 >= 0)
-    if (board[blackKingPos[0] + 1][blackKingPos[1] - 1] === "P") return true;
-  if (blackKingPos[0] + 1 < 8 && blackKingPos[1] + 1 < 8)
-    if (board[blackKingPos[0] + 1][blackKingPos[1] + 1] === "P") return true;
-  return false;
 };
 
 const addMove = (board, moves, from, to, isWhite) => {
@@ -218,10 +195,10 @@ const addMove = (board, moves, from, to, isWhite) => {
   moves.push(to);
 };
 //TODO
-// checked king
 // checkmate
 
 //DONE
+// checked king
 // kings can't touch each other
 // en passant
 // removing pawn after en passant
