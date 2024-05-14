@@ -1,4 +1,5 @@
 import { Button, Paper, Box, Container, Typography } from "@mui/material";
+import { Outlet, Link } from "react-router-dom";
 
 function Home() {
   return (
@@ -9,6 +10,7 @@ function Home() {
         flexDirection: "column",
         justifyContent: "space-between",
         alignItems: "center",
+        backgroundColor: "#bcd2da",
       }}
     >
       <Box display={"flex"}>
@@ -27,16 +29,29 @@ function Home() {
           padding={5}
           gap={2}
         >
-          <Button variant="contained">Create Room</Button>
-          <Button variant="contained">Join room</Button>
-          <Button variant="contained">Play Locally</Button>
-          <Button variant="contained" color="primary" disabled>
-            Play VS BOT
+          {/* <Link to="/local-game">Local Game</Link> */}
+          <Button
+            component={Link}
+            to="/local-game"
+            variant="contained"
+            size="large"
+          >
+            <Typography variant="h4">Local Game</Typography>
+          </Button>
+          {/* <Button variant="contained" size="large">
+            <Typography variant="h4">Join room</Typography>
+          </Button>
+          <Button variant="contained" size="large">
+            <Typography variant="h4">Play Locally</Typography>
+          </Button> */}
+          <Button variant="contained" size="large" color="primary" disabled>
+            <Typography variant="h4">Play VS BOT</Typography>
           </Button>
         </Box>
       </Paper>
+      <Outlet />
       <Typography variant="body1" color="textSecondary">
-        &copy; 2024 Denis Poczęty
+        &copy; 2024 Denis Poczęty, Paweł Oparczyk
       </Typography>
     </Container>
   );

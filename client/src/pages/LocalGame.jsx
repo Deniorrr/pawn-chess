@@ -1,10 +1,22 @@
 import Chessboard from "../components/Chessboard";
-import { Container, Paper, Typography, Grid } from "@mui/material";
+import {
+  Container,
+  Paper,
+  Typography,
+  Grid,
+  Backdrop,
+  Button,
+} from "@mui/material";
 import { useState } from "react";
+import { brown } from "@mui/material/colors";
 
 function LocalGame() {
   const [whiteScore, setWhiteScore] = useState(0);
   const [blackScore, setBlackScore] = useState(0);
+
+  const [isWhiteTurn, setIsWhiteTurn] = useState(true);
+
+  const [displayEndScreen, setDisplayEndScreen] = useState(false);
 
   const addPoint = (color) => {
     if (color === "white") {
@@ -15,6 +27,7 @@ function LocalGame() {
   };
 
   const endViaCheckmate = (color) => {
+    setDisplayEndScreen(true);
     if (color === "white") {
       console.log("White wins");
     } else {
@@ -23,36 +36,93 @@ function LocalGame() {
   };
 
   const endViaStalemate = () => {
+    setDisplayEndScreen(true);
     console.log("PAT");
   };
 
   return (
-    <Container>
-      <Paper elevation={12} style={{ padding: 20 }}>
-        <Typography variant="h3" gutterBottom textAlign={"center"}>
-          Local Game
-        </Typography>
-        <Grid container spacing={1} my={1}>
-          <Grid item>
-            <Chessboard
-              addPoint={addPoint}
-              endViaCheckmate={endViaCheckmate}
-              endViaStalemate={endViaStalemate}
-            />
+    <>
+      <Container>
+        <Paper
+          elevation={12}
+          style={{ padding: 20, backgroundColor: "#bcd2da" }}
+        >
+          <Typography variant="h3" gutterBottom textAlign={"center"}>
+            Local Game
+          </Typography>
+          <Grid container spacing={1} my={1} alignItems={"center"}>
+            <Grid item>
+              <Chessboard
+                addPoint={addPoint}
+                endViaCheckmate={endViaCheckmate}
+                endViaStalemate={endViaStalemate}
+                setIsWhiteTurn={setIsWhiteTurn}
+              />
+            </Grid>
+            <Grid item>
+              <Paper
+                elevation={isWhiteTurn ? 3 : 24}
+                aria-label="score"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  paddingRight: "10px",
+                  marginBottom: "10px",
+                  transform: isWhiteTurn ? "scale(1)" : "scale(1.05)",
+                  backgroundColor: isWhiteTurn ? brown[100] : brown[200],
+                }}
+              >
+                <Paper
+                  style={{ width: "3em", textAlign: "center", margin: "15px" }}
+                >
+                  <Typography variant="h4">{blackScore}</Typography>
+                </Paper>
+                <Typography variant="h4">Black player</Typography>
+              </Paper>
+              <Paper
+                elevation={isWhiteTurn ? 24 : 3}
+                aria-label="score"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  paddingRight: "10px",
+                  transform: isWhiteTurn ? "scale(1.05)" : "scale(1)",
+                  backgroundColor: isWhiteTurn ? brown[200] : brown[100],
+                }}
+              >
+                <Paper
+                  color="secondary"
+                  style={{ width: "3em", textAlign: "center", margin: "15px" }}
+                >
+                  <Typography variant="h4">{whiteScore}</Typography>
+                </Paper>
+                <Typography variant="h4">White player</Typography>
+              </Paper>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Paper elevation={3} aria-label="scores">
-              <Typography variant="h4" gutterBottom>
-                White: {whiteScore}
-              </Typography>
-              <Typography variant="h4" gutterBottom>
-                Black: {blackScore}
-              </Typography>
-            </Paper>
-          </Grid>
+        </Paper>
+      </Container>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={displayEndScreen}
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+      >
+        <Grid container direction="column" alignItems="center">
+          <Typography variant="h2" gutterBottom>
+            Draw, white or black wins, idk!
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => setDisplayEndScreen(false)}
+          >
+            <Typography variant="h4">Close</Typography>
+          </Button>
+          <Button variant="contained" style={{ marginTop: "20px" }}>
+            <Typography variant="h4">Play Again</Typography>
+          </Button>
         </Grid>
-      </Paper>
-    </Container>
+      </Backdrop>
+    </>
   );
 }
 

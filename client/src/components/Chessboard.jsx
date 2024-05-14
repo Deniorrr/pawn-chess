@@ -15,6 +15,7 @@ Chessboard.propTypes = {
   addPoint: PropTypes.func.isRequired,
   endViaCheckmate: PropTypes.func.isRequired,
   endViaStalemate: PropTypes.func.isRequired,
+  setIsWhiteTurn: PropTypes.func.isRequired,
 };
 
 function Chessboard(props) {
@@ -151,6 +152,7 @@ function Chessboard(props) {
     setSelectedPiece(null);
     setLegalMoves([]);
     setIsWhiteTurn(!isWhiteTurn);
+    props.setIsWhiteTurn(!isWhiteTurn);
   };
 
   const generateColor = (i, j) => {
@@ -193,66 +195,80 @@ function Chessboard(props) {
   };
 
   return (
-    <Paper elevation={0}>
-      <Grid container spacing={1} my={1}>
-        <Grid item>
-          <Button variant="contained" onClick={resetGame}>
-            Reset
-          </Button>
+    <>
+      <Paper elevation={0} style={{ backgroundColor: "#bcd2da" }}>
+        <Grid container spacing={1} my={1}>
+          <Grid item>
+            <Button variant="contained" onClick={resetGame} size="large">
+              Reset
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              onClick={() => setCellSize(cellSize + 5)}
+              size="large"
+            >
+              +
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              onClick={() => setCellSize(cellSize - 5)}
+              size="large"
+            >
+              -
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              onClick={() => rotateChessboard()}
+              size="large"
+            >
+              Rotate chessboard
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item>
-          <Button variant="contained" onClick={() => setCellSize(cellSize + 5)}>
-            +
-          </Button>
+        <Grid container aria-label="chessboard wrapper">
+          <Paper
+            elevation={24}
+            style={{
+              transform: isBoardRotated ? "rotate(180deg)" : "none",
+              transition: "transform 0.5s",
+            }}
+          >
+            {board.map((row, i) => (
+              <Grid container key={i} style={{ flexWrap: "nowrap" }}>
+                {row.map((piece, j) => (
+                  <Grid item key={j}>
+                    <Paper
+                      style={{
+                        cursor: "pointer",
+                        width: `${cellSize}px`,
+                        height: `${cellSize}px`,
+                        backgroundColor: generateColor(i, j),
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        boxSizing: "border-box",
+                        border: generateBorder(i, j),
+                        transform: isBoardRotated ? "rotate(-180deg)" : "none",
+                        transition: "transform 0.5s",
+                      }}
+                      onClick={() => selectPiece(i, j)}
+                    >
+                      {renderPiece(piece)}
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+            ))}
+          </Paper>
         </Grid>
-        <Grid item>
-          <Button variant="contained" onClick={() => setCellSize(cellSize - 5)}>
-            -
-          </Button>
-        </Grid>
-        <Grid item>
-          <Button variant="contained" onClick={() => rotateChessboard()}>
-            Rotate chessboard
-          </Button>
-        </Grid>
-      </Grid>
-      <Grid container aria-label="chessboard wrapper">
-        <Paper
-          elevation={24}
-          style={{
-            transform: isBoardRotated ? "rotate(180deg)" : "none",
-            transition: "transform 0.5s",
-          }}
-        >
-          {board.map((row, i) => (
-            <Grid container key={i} style={{ flexWrap: "nowrap" }}>
-              {row.map((piece, j) => (
-                <Grid item key={j}>
-                  <Paper
-                    style={{
-                      cursor: "pointer",
-                      width: `${cellSize}px`,
-                      height: `${cellSize}px`,
-                      backgroundColor: generateColor(i, j),
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      boxSizing: "border-box",
-                      border: generateBorder(i, j),
-                      transform: isBoardRotated ? "rotate(-180deg)" : "none",
-                      transition: "transform 0.5s",
-                    }}
-                    onClick={() => selectPiece(i, j)}
-                  >
-                    {renderPiece(piece)}
-                  </Paper>
-                </Grid>
-              ))}
-            </Grid>
-          ))}
-        </Paper>
-      </Grid>
-    </Paper>
+      </Paper>
+    </>
   );
 }
 
