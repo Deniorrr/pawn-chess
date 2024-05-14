@@ -17,6 +17,7 @@ function LocalGame() {
   const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
   const [displayEndScreen, setDisplayEndScreen] = useState(false);
+  const [endScreenText, setEndScreenText] = useState("");
 
   const addPoint = (color) => {
     if (color === "white") {
@@ -27,7 +28,13 @@ function LocalGame() {
   };
 
   const endViaCheckmate = (color) => {
+    setEndScreenText(
+      color === "white"
+        ? "White wins via checkmate!"
+        : "Black wins via checkmate!"
+    );
     setDisplayEndScreen(true);
+
     if (color === "white") {
       console.log("White wins");
     } else {
@@ -117,7 +124,11 @@ function LocalGame() {
           >
             <Typography variant="h4">Close</Typography>
           </Button>
-          <Button variant="contained" style={{ marginTop: "20px" }}>
+          <Button
+            variant="contained"
+            style={{ marginTop: "20px" }}
+            onClick={() => window.location.reload()}
+          >
             <Typography variant="h4">Play Again</Typography>
           </Button>
         </Grid>

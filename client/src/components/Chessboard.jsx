@@ -36,7 +36,7 @@ function Chessboard(props) {
 
   const initialBoard = [
     [" ", " ", " ", " ", "k", " ", " ", " "],
-    [" ", " ", " ", " ", "p", " ", " ", " "],
+    [" ", " ", " ", " ", "p", "P", " ", " "],
     [" ", " ", " ", "P", "K", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
@@ -183,12 +183,12 @@ function Chessboard(props) {
     }
   };
 
-  const resetGame = () => {
-    setBoard(initialBoard);
-    setIsWhiteTurn(true);
-    setLegalMoves([]);
-    setSelectedPiece(null);
-  };
+  // const resetGame = () => {
+  //   setBoard(initialBoard);
+  //   setIsWhiteTurn(true);
+  //   setLegalMoves([]);
+  //   setSelectedPiece(null);
+  // };
 
   const rotateChessboard = () => {
     setIsBoardRotated(!isBoardRotated);
@@ -198,11 +198,11 @@ function Chessboard(props) {
     <>
       <Paper elevation={0} style={{ backgroundColor: "#bcd2da" }}>
         <Grid container spacing={1} my={1}>
-          <Grid item>
+          {/* <Grid item>
             <Button variant="contained" onClick={resetGame} size="large">
               Reset
             </Button>
-          </Grid>
+          </Grid> */}
           <Grid item>
             <Button
               variant="contained"
