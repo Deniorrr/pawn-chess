@@ -1,4 +1,4 @@
-GET https://stockfish.online/api/s/v2.php?fen=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR%20w%20KQkq%20-%200%201&depth=11
+GET https://stockfish.online/api/s/v2.php?fen=4k3/pppp2pp/8/4P3/5p1P/8/PPPPP1P1/4K3%20b%20KQkq%20-%200%201&depth=11
 # content-type: application/json
 # {
 #     "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",

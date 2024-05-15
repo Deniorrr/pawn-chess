@@ -44,7 +44,13 @@ function Home() {
           <Button variant="contained" size="large">
             <Typography variant="h4">Play Locally</Typography>
           </Button> */}
-          <Button variant="contained" size="large" color="primary" disabled>
+          <Button
+            variant="contained"
+            component={Link}
+            to="/stockfish"
+            size="large"
+            color="primary"
+          >
             <Typography variant="h4">Play VS BOT</Typography>
           </Button>
         </Box>

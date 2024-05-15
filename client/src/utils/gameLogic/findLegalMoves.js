@@ -1,6 +1,6 @@
-import { generateBoardAfterMove } from "./generateBoardAfterMove";
-import { isWhiteChecked } from "./isWhiteChecked";
-import { isBlackChecked } from "./isBlackChecked";
+import { generateBoardAfterMove } from "./generateBoardAfterMove.js";
+import { isWhiteChecked } from "./isWhiteChecked.js";
+import { isBlackChecked } from "./isBlackChecked.js";
 
 let piece;
 
@@ -127,13 +127,17 @@ const whiteKingMoves = (i, j, board) => {
       // }
 
       //i'm checking this somewher else
-      if (move[0] >= 0 && move[0] < 8 && move[1] >= 0 && move[1] < 8)
-        if (
-          board[move[0] - 1][move[1] + 1] !== "p" && //DEBUG THIS
-          board[move[0] - 1][move[1] - 1] !== "p"
-        )
-          if (board[move[0]][move[1]] !== "P")
-            addMove(board, moves, [i, j], move, true);
+      try {
+        if (move[0] >= 0 && move[0] < 8 && move[1] >= 0 && move[1] < 8)
+          if (
+            board[move[0] - 1][move[1] + 1] !== "p" && //DEBUG THIS
+            board[move[0] - 1][move[1] - 1] !== "p"
+          )
+            if (board[move[0]][move[1]] !== "P")
+              addMove(board, moves, [i, j], move, true);
+      } catch (e) {
+        console.log(e);
+      }
     }
   });
   return moves;
@@ -194,11 +198,3 @@ const addMove = (board, moves, from, to, isWhite) => {
   }
   moves.push(to);
 };
-//TODO
-// checkmate
-
-//DONE
-// checked king
-// kings can't touch each other
-// en passant
-// removing pawn after en passant

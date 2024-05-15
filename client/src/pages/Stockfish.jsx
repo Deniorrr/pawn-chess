@@ -1,4 +1,4 @@
-import Chessboard from "../components/Chessboard.jsx";
+import Chessboard from "../components/ChessboardCopy.jsx";
 import {
   Container,
   Paper,
@@ -12,7 +12,7 @@ import { brown } from "@mui/material/colors";
 import { Link } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-function LocalGame() {
+function Stockfish() {
   const [whiteScore, setWhiteScore] = useState(0);
   const [blackScore, setBlackScore] = useState(0);
 
@@ -77,7 +77,7 @@ function LocalGame() {
           style={{ padding: 20, backgroundColor: "#bcd2da" }}
         >
           <Typography variant="h3" gutterBottom textAlign={"center"}>
-            Local Game
+            Play vs Stockfish
           </Typography>
           <Grid container spacing={1} my={1} alignItems={"center"}>
             <Grid item>
@@ -107,7 +107,7 @@ function LocalGame() {
                 >
                   <Typography variant="h4">{blackScore}</Typography>
                 </Paper>
-                <Typography variant="h4">Black player</Typography>
+                <Typography variant="h4">Stockfish (depth=11)</Typography>
               </Paper>
               <Paper
                 elevation={isWhiteTurn ? 24 : 3}
@@ -162,4 +162,4 @@ function LocalGame() {
   );
 }
 
-export default LocalGame;
+export default Stockfish;
