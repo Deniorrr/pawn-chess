@@ -83,14 +83,6 @@ function Chessboard(props) {
         setEvaluation(res.data.evaluation);
         const from = [8 - bestmove[1], letterToNumber[bestmove[0]]];
         const to = [8 - bestmove[3], letterToNumber[bestmove[2]]];
-
-        // bestmove[0] = letterToNumber[bestmove[0]];
-        // bestmove[1] = 8 - bestmove[1];
-        // bestmove[2] = letterToNumber[bestmove[2]];
-        // bestmove[3] = 8 - bestmove[3];
-        console.log(bestmove);
-        console.log(from);
-        console.log(to);
         stockFishMove(from, to);
       });
   };
@@ -267,13 +259,6 @@ function Chessboard(props) {
     }
   };
 
-  // const resetGame = () => {
-  //   setBoard(initialBoard);
-  //   setIsWhiteTurn(true);
-  //   setLegalMoves([]);
-  //   setSelectedPiece(null);
-  // };
-
   const rotateChessboard = () => {
     setIsBoardRotated(!isBoardRotated);
   };
@@ -282,11 +267,6 @@ function Chessboard(props) {
     <>
       <Paper elevation={0} style={{ backgroundColor: "#bcd2da" }}>
         <Grid container spacing={1} my={1} alignItems={"center"}>
-          {/* <Grid item>
-            <Button variant="contained" onClick={resetGame} size="large">
-              Reset
-            </Button>
-          </Grid> */}
           <Grid item>
             <Button
               variant="contained"
