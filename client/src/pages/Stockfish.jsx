@@ -1,4 +1,4 @@
-import Chessboard from "../components/ChessboardCopy.jsx";
+import Chessboard from "../components/Chessboard.jsx";
 import {
   Container,
   Paper,
@@ -87,6 +87,7 @@ function Stockfish() {
                 endViaStalemate={endViaStalemate}
                 setIsWhiteTurn={setIsWhiteTurn}
                 endViaMaterial={endViaMaterial}
+                isPlayingVsBot
               />
             </Grid>
             <Grid item>
