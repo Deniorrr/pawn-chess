@@ -148,15 +148,6 @@ function Stockfish() {
           >
             <Typography variant="h4">Close</Typography>
           </Button>
-          {/* <Button
-            variant="contained"
-            style={{ marginTop: "20px" }}
-            component={Link}
-            to="/local-game/"
-            //onClick={() => window.location.reload()}
-          >
-            <Typography variant="h4">Play Again</Typography>
-          </Button> */}
         </Grid>
       </Backdrop>
     </>

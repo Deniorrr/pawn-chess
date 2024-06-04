@@ -29,7 +29,6 @@ function Home() {
           padding={5}
           gap={2}
         >
-          {/* <Link to="/local-game">Local Game</Link> */}
           <Button
             component={Link}
             to="/local-game"
