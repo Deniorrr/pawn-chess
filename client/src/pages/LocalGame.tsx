@@ -1,16 +1,10 @@
-import Chessboard from "../components/Chessboard.jsx";
-import {
-  Container,
-  Paper,
-  Typography,
-  Grid,
-  Backdrop,
-  Button,
-} from "@mui/material";
+import Chessboard from "../containers/Chessboard.jsx";
+import { Container, Paper, Typography, Grid, Button } from "@mui/material";
 import { useState } from "react";
-import { brown } from "@mui/material/colors";
 import { Link } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import PlayerScores from "../components/PlayerScores";
+import EndScreen from "../components/EndScreen";
 
 function LocalGame() {
   const [whiteScore, setWhiteScore] = useState(0);
@@ -21,7 +15,7 @@ function LocalGame() {
   const [displayEndScreen, setDisplayEndScreen] = useState(false);
   const [endScreenText, setEndScreenText] = useState("");
 
-  const addPoint = (color) => {
+  const addPoint = (color: string): void => {
     if (color === "white") {
       setWhiteScore(whiteScore + 1);
     } else {
@@ -29,22 +23,16 @@ function LocalGame() {
     }
   };
 
-  const endViaCheckmate = (color) => {
+  const endViaCheckmate = (color: string): void => {
     setEndScreenText(
       color === "white"
         ? "White wins via checkmate!"
         : "Black wins via checkmate!"
     );
     setDisplayEndScreen(true);
-
-    if (color === "white") {
-      console.log("White wins");
-    } else {
-      console.log("Black wins");
-    }
   };
 
-  const endViaStalemate = () => {
+  const endViaStalemate = (): void => {
     if (whiteScore > blackScore)
       setEndScreenText("Stalemate! White wins on points!");
     if (whiteScore < blackScore)
@@ -54,7 +42,7 @@ function LocalGame() {
     setDisplayEndScreen(true);
   };
 
-  const endViaMaterial = () => {
+  const endViaMaterial = (): void => {
     if (whiteScore > blackScore) setEndScreenText("White wins on points!");
     if (whiteScore < blackScore) setEndScreenText("Black wins on points!");
     if (whiteScore === blackScore) setEndScreenText("Draw on points!");
@@ -90,49 +78,21 @@ function LocalGame() {
               />
             </Grid>
             <Grid item>
-              <Paper
-                elevation={isWhiteTurn ? 3 : 24}
-                aria-label="score"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  paddingRight: "10px",
-                  marginBottom: "10px",
-                  transform: isWhiteTurn ? "scale(1)" : "scale(1.05)",
-                  backgroundColor: isWhiteTurn ? brown[100] : brown[200],
-                }}
-              >
-                <Paper
-                  style={{ width: "3em", textAlign: "center", margin: "15px" }}
-                >
-                  <Typography variant="h4">{blackScore}</Typography>
-                </Paper>
-                <Typography variant="h4">Black player</Typography>
-              </Paper>
-              <Paper
-                elevation={isWhiteTurn ? 24 : 3}
-                aria-label="score"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  paddingRight: "10px",
-                  transform: isWhiteTurn ? "scale(1.05)" : "scale(1)",
-                  backgroundColor: isWhiteTurn ? brown[200] : brown[100],
-                }}
-              >
-                <Paper
-                  color="secondary"
-                  style={{ width: "3em", textAlign: "center", margin: "15px" }}
-                >
-                  <Typography variant="h4">{whiteScore}</Typography>
-                </Paper>
-                <Typography variant="h4">White player</Typography>
-              </Paper>
+              <PlayerScores
+                whiteScore={whiteScore}
+                blackScore={blackScore}
+                isWhiteTurn={isWhiteTurn}
+              />
             </Grid>
           </Grid>
         </Paper>
       </Container>
-      <Backdrop
+      <EndScreen
+        displayEndScreen={displayEndScreen}
+        setDisplayEndScreen={setDisplayEndScreen}
+        endScreenText={endScreenText}
+      />
+      {/* <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={displayEndScreen}
         style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
@@ -148,7 +108,7 @@ function LocalGame() {
             <Typography variant="h4">Close</Typography>
           </Button>
         </Grid>
-      </Backdrop>
+      </Backdrop> */}
     </>
   );
 }
