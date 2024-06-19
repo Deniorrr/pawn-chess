@@ -1,4 +1,4 @@
-import Chessboard from "../containers/Chessboard.jsx";
+import Chessboard from "../containers/Chessboard.tsx";
 import { Container, Paper, Typography, Grid, Button } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";

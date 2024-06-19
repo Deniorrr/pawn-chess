@@ -11,6 +11,7 @@ import { isWhiteChecked } from "../utils/gameLogic/isWhiteChecked.js";
 import { isBlackChecked } from "../utils/gameLogic/isBlackChecked.js";
 import PropTypes from "prop-types";
 import axios from "axios";
+import { ChessBoard, ChessSquare } from "../types/ChessBoard";
 
 Chessboard.propTypes = {
   addPoint: PropTypes.func.isRequired,
@@ -21,25 +22,23 @@ Chessboard.propTypes = {
   isPlayingVsBot: PropTypes.bool.isRequired,
 };
 
-function Chessboard(props) {
+interface ChessboardProps {
+  addPoint: (player: string) => void;
+  endViaCheckmate: (winner: string) => void;
+  endViaStalemate: () => void;
+  setIsWhiteTurn: (isWhiteTurn: boolean) => void;
+  endViaMaterial: () => void;
+  isPlayingVsBot: boolean;
+}
+
+function Chessboard(props: ChessboardProps) {
   const addPoint = props.addPoint;
   const endViaCheckmate = props.endViaCheckmate;
   const endViaStalemate = props.endViaStalemate;
   const endViaMaterial = props.endViaMaterial;
   const isPlayingVsBot = props.isPlayingVsBot;
 
-  // const initialBoard = [
-  //   [" ", " ", " ", " ", "k", " ", " ", " "],
-  //   ["p", "p", "p", "p", "p", "p", "p", "p"],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   ["P", "P", "P", "P", "P", "P", "P", "P"],
-  //   [" ", " ", " ", " ", "K", " ", " ", " "],
-  // ];
-
-  const initialBoard = [
+  const initialBoard: ChessBoard = [
     [" ", " ", " ", " ", "k", " ", " ", " "],
     [" ", " ", " ", " ", "p", "P", " ", " "],
     [" ", " ", " ", "P", "K", " ", " ", " "],
@@ -52,21 +51,21 @@ function Chessboard(props) {
 
   const [isWhiteTurn, setIsWhiteTurn] = useState(true);
   const [isBoardRotated, setIsBoardRotated] = useState(false);
-  const [legalMoves, setLegalMoves] = useState([]);
+  const [legalMoves, setLegalMoves] = useState<never[]>([]);
 
   const [cellSize, setCellSize] = useState(85);
   const [board, setBoard] = useState(initialBoard);
-  const [selectedPiece, setSelectedPiece] = useState(null);
+  const [selectedPiece, setSelectedPiece] = useState<[number, number] | null>(
+    null
+  );
   const [evaluation, setEvaluation] = useState(0);
   const [showEval, setShowEval] = useState(false);
 
-  const areObjectsSame = (a, b) => {
+  const areObjectsSame = (a: object | null, b: object | null): boolean => {
     return JSON.stringify(a) === JSON.stringify(b) ? true : false;
   };
 
-  const getNextMove = (fen) => {
-    console.log(fen);
-
+  const getNextMove = (fen: string) => {
     axios
       .get(`https://stockfish.online/api/s/v2.php?fen=${fen}&depth=11`)
       .then((res) => {
@@ -83,12 +82,21 @@ function Chessboard(props) {
           h: 7,
         };
         setEvaluation(res.data.evaluation);
-        const from = [8 - bestmove[1], letterToNumber[bestmove[0]]];
-        const to = [8 - bestmove[3], letterToNumber[bestmove[2]]];
+        const from: [number, number] = [
+          8 - bestmove[1],
+          letterToNumber[bestmove[0] as keyof typeof letterToNumber],
+        ];
+        const to: [number, number] = [
+          8 - bestmove[3],
+          letterToNumber[bestmove[2] as keyof typeof letterToNumber],
+        ];
         stockFishMove(from, to);
       });
   };
-  const convertBoardToFen = (board, _isWhiteTurn) => {
+  const convertBoardToFen = (
+    board: ChessBoard,
+    _isWhiteTurn: boolean
+  ): string => {
     let fen = "";
     board.forEach((row) => {
       let emptySpaces = 0;
@@ -115,27 +123,33 @@ function Chessboard(props) {
     return fen;
   };
 
-  const selectPiece = (i, j) => {
+  const selectPiece = (row: number, column: number) => {
     if (isPlayingVsBot && !isWhiteTurn) return;
-    if (areObjectsSame(selectedPiece, [i, j])) {
+    if (areObjectsSame(selectedPiece, [row, column])) {
       setLegalMoves([]);
       return setSelectedPiece(null);
     }
     if (selectedPiece === null) {
-      if (isWhiteTurn && board[i][j] === board[i][j].toLowerCase()) {
+      if (
+        isWhiteTurn &&
+        board[row][column] === board[row][column].toLowerCase()
+      ) {
         return;
       }
-      if (!isWhiteTurn && board[i][j] === board[i][j].toUpperCase()) {
+      if (
+        !isWhiteTurn &&
+        board[row][column] === board[row][column].toUpperCase()
+      ) {
         return;
       }
-      if (board[i][j] === " ") {
+      if (board[row][column] === " ") {
         return;
       }
-      setLegalMoves(findLegalMoves(i, j, board));
-      return setSelectedPiece([i, j]);
+      setLegalMoves(findLegalMoves(row, column, board));
+      return setSelectedPiece([row, column]);
     }
-    if (legalMoves.find((move) => areObjectsSame(move, [i, j]))) {
-      return movePiece(i, j);
+    if (legalMoves.find((move) => areObjectsSame(move, [row, column]))) {
+      return movePiece(row, column);
     }
     setLegalMoves([]);
     setSelectedPiece(null);
@@ -202,7 +216,9 @@ function Chessboard(props) {
     isMaterialDraw();
   }, [board]);
 
-  const stockFishMove = (from, [i, j]) => {
+  const stockFishMove = (from: [number, number], to: [number, number]) => {
+    const i = to[0];
+    const j = to[1];
     if (board[from[0]][from[1]] === "P" && i === 0) addPoint("white");
     if (board[from[0]][from[1]] === "p" && i === 7) addPoint("black");
     const boardAfterMove = generateBoardAfterMove([...board], from, [i, j]);
@@ -213,10 +229,11 @@ function Chessboard(props) {
     props.setIsWhiteTurn(true);
   };
 
-  const movePiece = (i, j) => {
-    if (board[selectedPiece[0]][selectedPiece[1]] === "P" && i === 0)
+  const movePiece = (i: number, j: number) => {
+    if (!selectedPiece) return;
+    if (board[selectedPiece![0]][selectedPiece![1]] === "P" && i === 0)
       addPoint("white");
-    if (board[selectedPiece[0]][selectedPiece[1]] === "p" && i === 7)
+    if (board[selectedPiece![0]][selectedPiece![1]] === "p" && i === 7)
       addPoint("black");
     const boardAfterMove = generateBoardAfterMove([...board], selectedPiece, [
       i,
@@ -239,29 +256,29 @@ function Chessboard(props) {
     }
   };
 
-  const generateColor = (i, j) => {
+  const generateColor = (i: number, j: number) => {
     if (areObjectsSame(selectedPiece, [i, j])) {
       return brown["A400"];
     }
     return (i + j) % 2 === 0 ? "white" : "gray";
   };
 
-  const generateBorder = (i, j) => {
+  const generateBorder = (i: number, j: number) => {
     return legalMoves.find((move) => areObjectsSame(move, [i, j]))
       ? "2px solid red"
       : "none";
   };
 
-  const renderPiece = (piece) => {
+  const renderPiece = (piece: ChessSquare) => {
     switch (piece) {
       case "k":
-        return <img src={k} alt="k" style={{ width: "100%" }} />;
+        return <img src={k.toString()} alt="k" style={{ width: "100%" }} />; //k.toString() so typescript doesn't complain
       case "K":
-        return <img src={kw} alt="kw" style={{ width: "100%" }} />;
+        return <img src={kw.toString()} alt="kw" style={{ width: "100%" }} />;
       case "p":
-        return <img src={p} alt="p" style={{ width: "100%" }} />;
+        return <img src={p.toString()} alt="p" style={{ width: "100%" }} />;
       case "P":
-        return <img src={pw} alt="pw" style={{ width: "100%" }} />;
+        return <img src={pw.toString()} alt="pw" style={{ width: "100%" }} />;
       case "-":
         return " ";
       default:
