@@ -75,6 +75,7 @@ function LocalGame() {
                 endViaStalemate={endViaStalemate}
                 setIsWhiteTurn={setIsWhiteTurn}
                 endViaMaterial={endViaMaterial}
+                isPlayingVsBot={false}
               />
             </Grid>
             <Grid item>

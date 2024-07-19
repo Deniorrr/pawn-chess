@@ -11,7 +11,7 @@ import { isWhiteChecked } from "../utils/gameLogic/isWhiteChecked.js";
 import { isBlackChecked } from "../utils/gameLogic/isBlackChecked.js";
 import PropTypes from "prop-types";
 import axios from "axios";
-import { ChessBoard, ChessSquare } from "../types/ChessBoard";
+import { ChessBoard, ChessCoord, ChessSquare } from "../types/ChessBoardTypes";
 
 Chessboard.propTypes = {
   addPoint: PropTypes.func.isRequired,
@@ -32,11 +32,13 @@ interface ChessboardProps {
 }
 
 function Chessboard(props: ChessboardProps) {
-  const addPoint = props.addPoint;
-  const endViaCheckmate = props.endViaCheckmate;
-  const endViaStalemate = props.endViaStalemate;
-  const endViaMaterial = props.endViaMaterial;
-  const isPlayingVsBot = props.isPlayingVsBot;
+  const {
+    addPoint,
+    endViaCheckmate,
+    endViaStalemate,
+    endViaMaterial,
+    isPlayingVsBot = false, // Provide a default value of false
+  } = props;
 
   const initialBoard: ChessBoard = [
     [" ", " ", " ", " ", "k", " ", " ", " "],
@@ -51,10 +53,10 @@ function Chessboard(props: ChessboardProps) {
 
   const [isWhiteTurn, setIsWhiteTurn] = useState(true);
   const [isBoardRotated, setIsBoardRotated] = useState(false);
-  const [legalMoves, setLegalMoves] = useState<never[]>([]);
+  const [legalMoves, setLegalMoves] = useState<ChessCoord[]>([]);
 
   const [cellSize, setCellSize] = useState(85);
-  const [board, setBoard] = useState(initialBoard);
+  const [board, setBoard] = useState<ChessBoard>(initialBoard);
   const [selectedPiece, setSelectedPiece] = useState<[number, number] | null>(
     null
   );

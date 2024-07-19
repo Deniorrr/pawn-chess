@@ -19,3 +19,5 @@ export type ChessBoard = [
   ChessRow,
   ChessRow
 ];
+
+export type ChessCoord = [number, number];

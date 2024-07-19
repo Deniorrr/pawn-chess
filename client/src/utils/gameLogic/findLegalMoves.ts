@@ -1,11 +1,20 @@
 import { generateBoardAfterMove } from "./generateBoardAfterMove.js";
+import {
+  ChessBoard,
+  ChessSquare,
+  ChessCoord,
+} from "../../types/ChessBoardTypes.js";
 import { isWhiteChecked } from "./isWhiteChecked.js";
 import { isBlackChecked } from "./isBlackChecked.js";
 
-let piece;
+let piece: ChessSquare;
 
-export const findLegalMoves = (i, j, board) => {
-  let legalMoves = [];
+export const findLegalMoves = (
+  i: number,
+  j: number,
+  board: ChessBoard
+): ChessCoord[] => {
+  let legalMoves: ChessCoord[] = [];
   piece = board[i][j];
   switch (piece) {
     case "k":
@@ -24,8 +33,12 @@ export const findLegalMoves = (i, j, board) => {
   return legalMoves;
 };
 
-const blackKingMoves = (i, j, board) => {
-  const allKingMoves = [
+const blackKingMoves = (
+  i: number,
+  j: number,
+  board: ChessBoard
+): ChessCoord[] => {
+  const allKingMoves: ChessCoord[] = [
     [i - 1, j],
     [i + 1, j],
     [i, j + 1],
@@ -35,8 +48,8 @@ const blackKingMoves = (i, j, board) => {
     [i + 1, j - 1],
     [i + 1, j + 1],
   ];
-  let moves = [];
-  let whiteKingPos = [];
+  const moves: ChessCoord[] = [];
+  let whiteKingPos: ChessCoord;
   board.forEach((row, i) => {
     row.forEach((cell, j) => {
       if (cell === "K") whiteKingPos = [i, j];
@@ -59,8 +72,12 @@ const blackKingMoves = (i, j, board) => {
   return moves;
 };
 
-const whiteKingMoves = (i, j, board) => {
-  const allKingMoves = [
+const whiteKingMoves = (
+  i: number,
+  j: number,
+  board: ChessBoard
+): ChessCoord[] => {
+  const allKingMoves: ChessCoord[] = [
     [i - 1, j],
     [i + 1, j],
     [i, j + 1],
@@ -70,8 +87,8 @@ const whiteKingMoves = (i, j, board) => {
     [i + 1, j - 1],
     [i + 1, j + 1],
   ];
-  let moves = [];
-  let blackKingPos = [];
+  const moves: ChessCoord[] = [];
+  let blackKingPos: ChessCoord;
   board.forEach((row, i) => {
     row.forEach((cell, j) => {
       if (cell === "k") blackKingPos = [i, j];
@@ -94,8 +111,12 @@ const whiteKingMoves = (i, j, board) => {
   return moves;
 };
 
-const blackPawnMoves = (i, j, board) => {
-  let moves = [];
+const blackPawnMoves = (
+  i: number,
+  j: number,
+  board: ChessBoard
+): ChessCoord[] => {
+  const moves: ChessCoord[] = [];
   if (board[i + 1][j] === " ") {
     addMove(board, moves, [i, j], [i + 1, j], false);
     if (i === 1 && board[i + 2][j] === " ")
@@ -110,8 +131,8 @@ const blackPawnMoves = (i, j, board) => {
   return moves;
 };
 
-const whitePawnMoves = (i, j, board) => {
-  let moves = [];
+const whitePawnMoves = (i: number, j: number, board: ChessBoard) => {
+  const moves: ChessCoord[] = [];
   if (board[i - 1][j] === " ") {
     addMove(board, moves, [i, j], [i - 1, j], true);
     if (i === 6 && board[i - 2][j] === " ")
@@ -126,9 +147,15 @@ const whitePawnMoves = (i, j, board) => {
   return moves;
 };
 
-const addMove = (board, moves, from, to, isWhite) => {
-  let _board = JSON.parse(JSON.stringify(board)); //deep copy because two dimensional array is passed by reference
-  let boardAfterMove = generateBoardAfterMove(_board, from, to);
+const addMove = (
+  board: ChessBoard,
+  moves: ChessCoord[],
+  from: ChessCoord,
+  to: ChessCoord,
+  isWhite: boolean
+) => {
+  const _board: ChessBoard = JSON.parse(JSON.stringify(board)); //deep copy because two dimensional array is passed by reference
+  const boardAfterMove: ChessBoard = generateBoardAfterMove(_board, from, to);
   if (isWhite) {
     if (isWhiteChecked(boardAfterMove)) {
       return;
