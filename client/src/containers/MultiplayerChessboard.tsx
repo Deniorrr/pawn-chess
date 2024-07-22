@@ -13,13 +13,14 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { ChessBoard, ChessCoord, ChessSquare } from "../types/ChessBoardTypes";
 
-Chessboard.propTypes = {
+MultiplayerChessboard.propTypes = {
   addPoint: PropTypes.func.isRequired,
   endViaCheckmate: PropTypes.func.isRequired,
   endViaStalemate: PropTypes.func.isRequired,
   setIsWhiteTurn: PropTypes.func.isRequired,
   endViaMaterial: PropTypes.func.isRequired,
   isPlayingVsBot: PropTypes.bool.isRequired,
+  isWhiteTurn: PropTypes.bool.isRequired,
 };
 
 interface ChessboardProps {
@@ -29,15 +30,21 @@ interface ChessboardProps {
   setIsWhiteTurn: (isWhiteTurn: boolean) => void;
   endViaMaterial: () => void;
   isPlayingVsBot: boolean;
+  sendPosition: (position: ChessBoard) => void;
+  position: ChessBoard;
+  isWhiteTurn: boolean;
 }
 
-function Chessboard(props: ChessboardProps) {
+function MultiplayerChessboard(props: ChessboardProps) {
   const {
     addPoint,
     endViaCheckmate,
     endViaStalemate,
     endViaMaterial,
-    isPlayingVsBot = false, // Provide a default value of false
+    isPlayingVsBot = false,
+    sendPosition,
+    position,
+    isWhiteTurn,
   } = props;
 
   // const initialBoard: ChessBoard = [
@@ -62,7 +69,7 @@ function Chessboard(props: ChessboardProps) {
     [" ", " ", " ", " ", "K", " ", " ", " "],
   ];
 
-  const [isWhiteTurn, setIsWhiteTurn] = useState(true);
+  // const [isWhiteTurn, setIsWhiteTurn] = useState(true);
   const [isBoardRotated, setIsBoardRotated] = useState(false);
   const [legalMoves, setLegalMoves] = useState<ChessCoord[]>([]);
 
@@ -77,6 +84,10 @@ function Chessboard(props: ChessboardProps) {
   const areObjectsSame = (a: object | null, b: object | null): boolean => {
     return JSON.stringify(a) === JSON.stringify(b) ? true : false;
   };
+
+  useEffect(() => {
+    setBoard(position);
+  }, [position]);
 
   const getNextMove = (fen: string) => {
     axios
@@ -238,8 +249,7 @@ function Chessboard(props: ChessboardProps) {
     setBoard(boardAfterMove);
     setSelectedPiece(null);
     setLegalMoves([]);
-    setIsWhiteTurn(true);
-    props.setIsWhiteTurn(true);
+    //props.setIsWhiteTurn(true);
   };
 
   const movePiece = (i: number, j: number) => {
@@ -253,19 +263,17 @@ function Chessboard(props: ChessboardProps) {
       j,
     ]);
     setBoard(boardAfterMove);
+    sendPosition(boardAfterMove);
     if (isPlayingVsBot) {
       if (isWhiteTurn) {
         getNextMove(convertBoardToFen(boardAfterMove, isWhiteTurn));
       }
       setSelectedPiece(null);
       setLegalMoves([]);
-      setIsWhiteTurn(false);
-      props.setIsWhiteTurn(false);
+      //props.setIsWhiteTurn(false);
     } else {
       setSelectedPiece(null);
       setLegalMoves([]);
-      setIsWhiteTurn(!isWhiteTurn);
-      props.setIsWhiteTurn(!isWhiteTurn);
     }
   };
 
@@ -408,4 +416,4 @@ function Chessboard(props: ChessboardProps) {
   );
 }
 
-export default Chessboard;
+export default MultiplayerChessboard;

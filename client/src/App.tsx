@@ -3,8 +3,8 @@ import "./styles/App.css";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { brown, lime } from "@mui/material/colors";
 import Home from "./pages/Home";
-// import Room from "./pages/Room";
 import LocalGame from "./pages/LocalGame";
+import Multiplayer from "./pages/Multiplayer";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Stockfish from "./pages/Stockfish";
 
@@ -20,10 +20,11 @@ function App() {
     <>
       <ThemeProvider theme={theme}>
         <BrowserRouter basename="/pawn-chess">
-          <Routes path="/pawnchess">
+          <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/local-game" element={<LocalGame />} />
             <Route path="/stockfish" element={<Stockfish />} />
+            <Route path="/multiplayer" element={<Multiplayer />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>

@@ -37,12 +37,6 @@ function Home() {
           >
             <Typography variant="h4">Local Game</Typography>
           </Button>
-          {/* <Button variant="contained" size="large">
-            <Typography variant="h4">Join room</Typography>
-          </Button>
-          <Button variant="contained" size="large">
-            <Typography variant="h4">Play Locally</Typography>
-          </Button> */}
           <Button
             variant="contained"
             component={Link}
@@ -51,6 +45,14 @@ function Home() {
             color="primary"
           >
             <Typography variant="h4">Play VS BOT</Typography>
+          </Button>
+          <Button
+            variant="contained"
+            size="large"
+            component={Link}
+            to="/multiplayer"
+          >
+            <Typography variant="h4">Join room</Typography>
           </Button>
         </Box>
       </Paper>
