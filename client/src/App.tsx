@@ -5,6 +5,7 @@ import { brown, lime } from "@mui/material/colors";
 import Home from "./pages/Home";
 import LocalGame from "./pages/LocalGame";
 import Multiplayer from "./pages/Multiplayer";
+import MultiplayerLobby from "./pages/MultiplayerLobby";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Stockfish from "./pages/Stockfish";
 
@@ -24,7 +25,12 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/local-game" element={<LocalGame />} />
             <Route path="/stockfish" element={<Stockfish />} />
-            <Route path="/multiplayer" element={<Multiplayer />} />
+            <Route
+              path="/multiplayer
+            "
+              element={<Multiplayer />}
+            />
+            <Route path="/lobby/:roomCode" element={<MultiplayerLobby />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>

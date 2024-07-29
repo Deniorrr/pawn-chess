@@ -1,7 +1,40 @@
-import { Button, Paper, Box, Container, Typography } from "@mui/material";
+import {
+  Button,
+  Paper,
+  Box,
+  Container,
+  Typography,
+  Input,
+} from "@mui/material";
 import { Outlet, Link } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+  const navigate = useNavigate();
+
+  const generateRoomCode = async (): Promise<string> => {
+    return axios
+      .get("http://localhost:3000/api/room")
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    //return Math.random().toString(36).substr(2, 4); //soon api call
+  };
+
+  const [roomCode, setRoomCode] = useState<string>("");
+
+  const handleCreateRoom = async () => {
+    const newRoomCode: string = await generateRoomCode();
+    if (newRoomCode) {
+      navigate(`/lobby/${newRoomCode}`);
+    }
+  };
+
   return (
     <Container
       style={{
@@ -49,11 +82,26 @@ function Home() {
           <Button
             variant="contained"
             size="large"
+            onClick={handleCreateRoom}
             component={Link}
-            to="/multiplayer"
+            to={`/`}
+          >
+            <Typography variant="h4">Create room</Typography>
+          </Button>
+
+          <Button
+            variant="contained"
+            size="large"
+            component={Link}
+            to={`/lobby/${roomCode}`}
           >
             <Typography variant="h4">Join room</Typography>
           </Button>
+          <Input
+            placeholder="Enter room code"
+            value={roomCode}
+            onChange={(e) => setRoomCode(e.target.value)}
+          />
         </Box>
       </Paper>
       <Outlet />
@@ -65,3 +113,5 @@ function Home() {
 }
 
 export default Home;
+
+//backend endpoint naming conventions
