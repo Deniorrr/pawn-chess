@@ -20,7 +20,7 @@ function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <BrowserRouter basename="/pawn-chess">
+        <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/local-game" element={<LocalGame />} />
