@@ -31,6 +31,7 @@ io.on("connection", (client) => {
   }
   rooms.addPlayer(roomCode, client.id);
   client.join(roomCode);
+  client.emit("changedLobbyState", rooms.data[roomCode].lobbyState);
   //send to player the color
   client.emit("playerNumber", playerNumber);
 
@@ -53,6 +54,7 @@ io.on("connection", (client) => {
       io.sockets.adapter.rooms.delete(roomCode);
       return rooms.deleteRoom(roomCode);
     }
+    client.leave(roomCode);
     io.to(roomCode).emit("changedLobbyState", rooms.data[roomCode].lobbyState);
     io.to(roomCode).emit("playerNumber", 1);
   });

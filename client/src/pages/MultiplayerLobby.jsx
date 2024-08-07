@@ -2,9 +2,12 @@ import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import { Container, Paper, Typography, Grid, Button } from "@mui/material";
 import { useState, useRef, useEffect } from "react";
+import { useAlert } from "../contexts/AlertContext";
 
 function MultiplayerLobby() {
   const { roomCode } = useParams();
+  const addAlert = useAlert();
+
   const [lobbyState, setLobbyState] = useState({
     isPlayer1Ready: false,
     isPlayer2Ready: false,
@@ -20,14 +23,17 @@ function MultiplayerLobby() {
 
     socketRef.current.on("connect", () => {
       console.log("connected to server");
+      //addAlert("connected to server", "success");
     });
 
     socketRef.current.on("disconnect", () => {
       console.log("disconnected from server");
+      addAlert("disconnected from server", "error");
     });
 
     socketRef.current.on("changedLobbyState", (data) => {
       console.log("changed lobby state", data);
+      //addAlert("changed lobby state", "info");
       setLobbyState(data);
     });
 
@@ -38,6 +44,7 @@ function MultiplayerLobby() {
 
     socketRef.current.on("gameStarted", (data) => {
       console.log("game started", data);
+      addAlert("game started", "info");
     });
     return () => {
       socketRef.current.disconnect();
