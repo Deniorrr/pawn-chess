@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 import { Container, Paper, Typography, Grid, Button } from "@mui/material";
 import { useState, useRef, useEffect } from "react";
 
@@ -22,6 +22,10 @@ function MultiplayerLobby() {
       console.log("connected to server");
     });
 
+    socketRef.current.on("disconnect", () => {
+      console.log("disconnected from server");
+    });
+
     socketRef.current.on("changedLobbyState", (data) => {
       console.log("changed lobby state", data);
       setLobbyState(data);
@@ -32,6 +36,9 @@ function MultiplayerLobby() {
       setPlayerNumber(data);
     });
 
+    socketRef.current.on("gameStarted", (data) => {
+      console.log("game started", data);
+    });
     return () => {
       socketRef.current.disconnect();
     };
@@ -55,7 +62,7 @@ function MultiplayerLobby() {
           </Grid>
           <Grid item xs={6}>
             <Typography variant="h5" gutterBottom textAlign={"center"}>
-              Player1
+              Player1 {playerNumber === 1 ? "(You)" : ""}
             </Typography>
             <Typography variant="h5" gutterBottom textAlign={"center"}>
               {lobbyState.isPlayer1Ready ? "ready" : "not ready"}
@@ -63,7 +70,7 @@ function MultiplayerLobby() {
           </Grid>
           <Grid item xs={6}>
             <Typography variant="h5" gutterBottom textAlign={"center"}>
-              Player2
+              Player2 {playerNumber === 2 ? "(You)" : ""}
             </Typography>
             <Typography variant="h5" gutterBottom textAlign={"center"}>
               {lobbyState.isPlayer2Ready ? "ready" : "not ready"}

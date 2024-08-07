@@ -10,6 +10,7 @@ class Rooms {
         isPlayer1Ready: false,
         isPlayer2Ready: false,
       },
+      hasGameStarted: false,
     };
   }
 
@@ -44,22 +45,39 @@ class Rooms {
   }
 
   changeLobbyState(roomCode, playerId) {
-    const room = this.data[roomCode];
-    const updatedData = room.lobbyState;
-    if (this.getPlayersColor(roomCode, playerId) === "white") {
-      updatedData.isPlayer1Ready = !updatedData.isPlayer1Ready;
-    } else {
-      updatedData.isPlayer2Ready = !updatedData.isPlayer2Ready;
+    try {
+      const room = this.data[roomCode];
+      const updatedData = room.lobbyState;
+      if (this.getPlayersColor(roomCode, playerId) === "white") {
+        updatedData.isPlayer1Ready = !updatedData.isPlayer1Ready;
+      } else {
+        updatedData.isPlayer2Ready = !updatedData.isPlayer2Ready;
+      }
+      room.lobbyState = updatedData;
+      if (updatedData.isPlayer1Ready && updatedData.isPlayer2Ready) {
+        room.hasGameStarted = true;
+      }
+      return room;
+    } catch (error) {
+      console.log(error);
     }
-    room.lobbyState = updatedData;
-    return updatedData;
   }
 
   disconnectPlayer(playerId) {
-    this.data = Object.values(this.data).map((room) => {
-      room.players = room.players.filter((player) => player !== playerId);
-      return room;
-    });
+    const roomCode = this.findRoom(playerId);
+    if (!roomCode) {
+      return;
+    }
+    this.data[roomCode].players = this.data[roomCode].players.filter(
+      (player) => player !== playerId
+    );
+    this.data[roomCode].lobbyState = {
+      isPlayer1Ready: false,
+      isPlayer2Ready: false,
+    };
+  }
+  deleteRoom(roomCode) {
+    delete this.data[roomCode];
   }
 }
 

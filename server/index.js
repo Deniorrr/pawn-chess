@@ -18,7 +18,11 @@ const rooms = new Rooms();
 
 io.on("connection", (client) => {
   const roomCode = client.handshake.query.roomCode;
-  if (roomCode === undefined) return;
+  if (roomCode === undefined) {
+    console.log("No room code provided");
+    client.disconnect();
+    return;
+  }
   let playerNumber = 2;
   if (!rooms.roomExists(roomCode)) {
     io.sockets.adapter.rooms.set(roomCode, new Set());
@@ -32,12 +36,25 @@ io.on("connection", (client) => {
 
   client.on("changedLobbyState", () => {
     const roomCode = rooms.findRoom(client.id);
-    const newLobbyState = rooms.changeLobbyState(roomCode, client.id);
-    io.to(roomCode).emit("changedLobbyState", newLobbyState);
+    const newRoomState = rooms.changeLobbyState(roomCode, client.id);
+    io.to(roomCode).emit("changedLobbyState", newRoomState.lobbyState);
+    if (newRoomState.hasGameStarted) {
+      io.to(roomCode).emit("gameStarted");
+    }
   });
 
   client.on("disconnect", () => {
+    const roomCode = rooms.findRoom(client.id);
     rooms.disconnectPlayer(client.id);
+    if (!rooms.data[roomCode]) {
+      return;
+    }
+    if (rooms.data[roomCode].players.length === 0) {
+      io.sockets.adapter.rooms.delete(roomCode);
+      return rooms.deleteRoom(roomCode);
+    }
+    io.to(roomCode).emit("changedLobbyState", rooms.data[roomCode].lobbyState);
+    io.to(roomCode).emit("playerNumber", 1);
   });
 });
 
