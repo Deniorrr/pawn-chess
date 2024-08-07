@@ -1,8 +1,7 @@
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
 import io from "socket.io-client";
 import { Container, Paper, Typography, Grid, Button } from "@mui/material";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function MultiplayerLobby() {
   const { roomCode } = useParams();
@@ -10,27 +9,35 @@ function MultiplayerLobby() {
     isPlayer1Ready: false,
     isPlayer2Ready: false,
   });
+  const [playerNumber, setPlayerNumber] = useState(0);
 
-  const socket = io.connect("http://localhost:3000", {
-    query: { roomCode },
-  });
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    socket.on("connect", () => {
+    socketRef.current = io.connect("http://localhost:3000", {
+      query: { roomCode },
+    });
+
+    socketRef.current.on("connect", () => {
       console.log("connected to server");
     });
 
-    socket.on("changedLobbyState", (data) => {
+    socketRef.current.on("changedLobbyState", (data) => {
       console.log("changed lobby state", data);
       setLobbyState(data);
     });
 
+    socketRef.current.on("playerNumber", (data) => {
+      console.log("player number", data);
+      setPlayerNumber(data);
+    });
+
     return () => {
-      socket.disconnect();
+      socketRef.current.disconnect();
     };
   }, [roomCode]);
   const switchReadyState = () => {
-    socket.emit("changedLobbyState", {});
+    socketRef.current.emit("changedLobbyState", {});
   };
 
   return (
@@ -64,7 +71,17 @@ function MultiplayerLobby() {
           </Grid>
           <Grid item xs={12} display={"flex"} justifyContent={"center"}>
             <Button variant="contained" onClick={() => switchReadyState()}>
-              {lobbyState.isPlayer1Ready ? "Cancel" : "Ready"}
+              {playerNumber === 1
+                ? lobbyState.isPlayer1Ready
+                  ? "Cancel"
+                  : "Ready"
+                : playerNumber === 2
+                ? lobbyState.isPlayer2Ready
+                  ? "Cancel"
+                  : "Ready"
+                : lobbyState.isPlayer2Ready
+                ? "Cancel"
+                : "Ready"}
             </Button>
           </Grid>
         </Grid>

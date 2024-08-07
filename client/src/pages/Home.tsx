@@ -79,13 +79,7 @@ function Home() {
           >
             <Typography variant="h4">Play VS BOT</Typography>
           </Button>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={handleCreateRoom}
-            component={Link}
-            to={`/`}
-          >
+          <Button variant="contained" size="large" onClick={handleCreateRoom}>
             <Typography variant="h4">Create room</Typography>
           </Button>
 
