@@ -3,10 +3,12 @@ import "./styles/App.css";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { brown, lime } from "@mui/material/colors";
 import Home from "./pages/Home";
-// import Room from "./pages/Room";
 import LocalGame from "./pages/LocalGame";
+import Multiplayer from "./pages/Multiplayer";
+import MultiplayerLobby from "./pages/MultiplayerLobby";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Stockfish from "./pages/Stockfish";
+import { AlertProvider } from "./contexts/AlertContext";
 
 function App() {
   const theme = createTheme({
@@ -19,13 +21,20 @@ function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <BrowserRouter basename="/pawn-chess">
-          <Routes path="/pawnchess">
-            <Route path="/" element={<Home />} />
-            <Route path="/local-game" element={<LocalGame />} />
-            <Route path="/stockfish" element={<Stockfish />} />
-          </Routes>
-        </BrowserRouter>
+        <AlertProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/local-game" element={<LocalGame />} />
+              <Route path="/stockfish" element={<Stockfish />} />
+              <Route
+                path="/multiplayer/game/:roomCode"
+                element={<Multiplayer />}
+              />
+              <Route path="/lobby/:roomCode" element={<MultiplayerLobby />} />
+            </Routes>
+          </BrowserRouter>
+        </AlertProvider>
       </ThemeProvider>
     </>
   );

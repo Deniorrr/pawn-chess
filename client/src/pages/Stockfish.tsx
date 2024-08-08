@@ -1,10 +1,10 @@
-import Chessboard from "../containers/Chessboard.tsx";
+import Chessboard from "../containers/Chessboard.js";
 import { Container, Paper, Typography, Grid, Button } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import PlayerScores from "../components/PlayerScores.tsx";
-import EndScreen from "../components/EndScreen.tsx";
+import PlayerScores from "../components/PlayerScores.js";
+import EndScreen from "../components/EndScreen.js";
 
 function Stockfish() {
   const [whiteScore, setWhiteScore] = useState(0);
@@ -15,7 +15,7 @@ function Stockfish() {
   const [displayEndScreen, setDisplayEndScreen] = useState(false);
   const [endScreenText, setEndScreenText] = useState("");
 
-  const addPoint = (color) => {
+  const addPoint = (color: string): void => {
     if (color === "white") {
       setWhiteScore(whiteScore + 1);
     } else {
@@ -23,7 +23,7 @@ function Stockfish() {
     }
   };
 
-  const endViaCheckmate = (color) => {
+  const endViaCheckmate = (color: string): void => {
     setEndScreenText(
       color === "white"
         ? "White wins via checkmate!"
