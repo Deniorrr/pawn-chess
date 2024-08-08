@@ -28,8 +28,7 @@ function App() {
               <Route path="/local-game" element={<LocalGame />} />
               <Route path="/stockfish" element={<Stockfish />} />
               <Route
-                path="/multiplayer
-            "
+                path="/multiplayer/game/:roomCode"
                 element={<Multiplayer />}
               />
               <Route path="/lobby/:roomCode" element={<MultiplayerLobby />} />

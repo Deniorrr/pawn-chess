@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { Container, Paper, Typography, Grid, Button } from "@mui/material";
 import { useState, useRef, useEffect } from "react";
@@ -6,6 +6,7 @@ import { useAlert } from "../contexts/AlertContext";
 
 function MultiplayerLobby() {
   const { roomCode } = useParams();
+  const navigate = useNavigate();
   const addAlert = useAlert();
 
   const [lobbyState, setLobbyState] = useState({
@@ -28,7 +29,6 @@ function MultiplayerLobby() {
 
     socketRef.current.on("disconnect", () => {
       console.log("disconnected from server");
-      addAlert("disconnected from server", "error");
     });
 
     socketRef.current.on("changedLobbyState", (data) => {
@@ -45,6 +45,7 @@ function MultiplayerLobby() {
     socketRef.current.on("gameStarted", (data) => {
       console.log("game started", data);
       addAlert("game started", "info");
+      navigate("/multiplayer/game/" + roomCode);
     });
     return () => {
       socketRef.current.disconnect();

@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PlayerScores from "../components/PlayerScores.js";
-import EndScreen from "../components/EndScreen.js";
+import EndScreenNew from "../components/EndScreenNew";
 import io from "socket.io-client";
 import { ChessBoard } from "../types/ChessBoardTypes.js";
-
-const socket = io.connect("http://localhost:3000");
+import { PlayerTurn } from "../types/PlayerTurnEnum";
+import { WinType } from "../types/WinTypeEnum";
 
 function Multiplayer() {
   const [whiteScore, setWhiteScore] = useState(0);
@@ -17,35 +17,49 @@ function Multiplayer() {
   const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
   const [displayEndScreen, setDisplayEndScreen] = useState(false);
-  const [endScreenText, setEndScreenText] = useState("");
+  //const [endScreenText, setEndScreenText] = useState("");
+  const [winner, setWinner] = useState<PlayerTurn>(PlayerTurn.NONE);
+  const [winType, setWinType] = useState<WinType>(WinType.MATERIAL);
 
-  const [position, setPosition] = useState([
+  // const [position, setPosition] = useState<ChessBoard>([
+  //   [" ", " ", " ", " ", "k", " ", " ", " "],
+  //   ["p", "p", "p", "p", "p", "p", "p", "p"],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   ["P", "P", "P", "P", "P", "P", "P", "P"],
+  //   [" ", " ", " ", " ", "K", " ", " ", " "],
+  // ]);
+
+  const [position, setPosition] = useState<ChessBoard>([
     [" ", " ", " ", " ", "k", " ", " ", " "],
-    ["p", "p", "p", "p", "p", "p", "p", "p"],
+    [" ", " ", " ", " ", "p", "P", " ", " "],
+    [" ", " ", " ", "P", "K", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
-    ["P", "P", "P", "P", "P", "P", "P", "P"],
-    [" ", " ", " ", " ", "K", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
   ]);
 
+  const socket = io.connect("http://localhost:3000");
   const switchTurn = () => {
     console.log("switching turn to ", !isWhiteTurn);
     setIsWhiteTurn(!isWhiteTurn);
     //setIsWhiteTurn((prevIsWhiteTurn) => !prevIsWhiteTurn);
   };
 
-  useEffect(() => {
-    socket.on("color", (data: string) => {
-      console.log(data);
-    });
-    socket.on("position", (data) => {
-      console.log("recieved position", data);
-      switchTurn();
-      setPosition(data);
-    });
-  }, [socket, isWhiteTurn]);
+  // useEffect(() => {
+  //   socket.on("color", (data: string) => {
+  //     console.log(data);
+  //   });
+  //   socket.on("position", (data) => {
+  //     console.log("recieved position", data);
+  //     switchTurn();
+  //     setPosition(data);
+  //   });
+  // }, [socket, isWhiteTurn]);
 
   const sendPosition = (position: ChessBoard) => {
     console.log("sending position", position);
@@ -61,35 +75,9 @@ function Multiplayer() {
     }
   };
 
-  const endViaCheckmate = (color: string): void => {
-    setEndScreenText(
-      color === "white"
-        ? "White wins via checkmate!"
-        : "Black wins via checkmate!"
-    );
-    setDisplayEndScreen(true);
-
-    if (color === "white") {
-      console.log("White wins");
-    } else {
-      console.log("Black wins");
-    }
-  };
-
-  const endViaStalemate = () => {
-    if (whiteScore > blackScore)
-      setEndScreenText("Stalemate! White wins on points!");
-    if (whiteScore < blackScore)
-      setEndScreenText("Stalemate! Black wins on points!");
-    if (whiteScore === blackScore)
-      setEndScreenText("Stalemate! Draw on points!");
-    setDisplayEndScreen(true);
-  };
-
-  const endViaMaterial = () => {
-    if (whiteScore > blackScore) setEndScreenText("White wins on points!");
-    if (whiteScore < blackScore) setEndScreenText("Black wins on points!");
-    if (whiteScore === blackScore) setEndScreenText("Draw on points!");
+  const onGameOver = (winner: PlayerTurn, winType: WinType) => {
+    setWinner(winner);
+    setWinType(winType);
     setDisplayEndScreen(true);
   };
 
@@ -115,9 +103,10 @@ function Multiplayer() {
             <Grid item>
               <MultiplayerChessboard
                 addPoint={addPoint}
-                endViaCheckmate={endViaCheckmate}
-                endViaStalemate={endViaStalemate}
-                endViaMaterial={endViaMaterial}
+                // endViaCheckmate={endViaCheckmate}
+                // endViaStalemate={endViaStalemate}
+                // endViaMaterial={endViaMaterial}
+                onGameOver={onGameOver}
                 sendPosition={sendPosition}
                 isWhiteTurn={isWhiteTurn}
                 position={position}
@@ -133,10 +122,13 @@ function Multiplayer() {
           </Grid>
         </Paper>
       </Container>
-      <EndScreen
+      <EndScreenNew
         displayEndScreen={displayEndScreen}
+        winner={winner}
+        winType={winType}
+        score={{ white: whiteScore, black: blackScore }}
         setDisplayEndScreen={setDisplayEndScreen}
-        endScreenText={endScreenText}
+        //endScreenText={endScreenText}
       />
     </>
   );
