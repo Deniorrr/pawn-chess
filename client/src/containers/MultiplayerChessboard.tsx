@@ -15,49 +15,28 @@ import { PlayerTurn } from "../types/PlayerTurnEnum";
 import { WinType } from "../types/WinTypeEnum";
 
 MultiplayerChessboard.propTypes = {
-  addPoint: PropTypes.func.isRequired,
-  isWhiteTurn: PropTypes.bool.isRequired,
+  currentTurn: PropTypes.string.isRequired,
   onGameOver: PropTypes.func.isRequired,
+  addPoint: PropTypes.func.isRequired,
 };
 
 interface ChessboardProps {
-  addPoint: (player: string) => void;
-  sendPosition: (position: ChessBoard) => void;
+  currentTurn: PlayerTurn;
+  onChangePosition: (position: ChessBoard) => void;
   position: ChessBoard;
-  isWhiteTurn: boolean;
   onGameOver: (winner: PlayerTurn, winType: WinType) => void;
+  addPoint: (player: PlayerTurn) => void;
 }
 
 function MultiplayerChessboard(props: ChessboardProps) {
-  const { addPoint, sendPosition, position, isWhiteTurn, onGameOver } = props;
-
-  // const initialBoard: ChessBoard = [
-  //   [" ", " ", " ", " ", "k", " ", " ", " "],
-  //   [" ", " ", " ", " ", "p", "P", " ", " "],
-  //   [" ", " ", " ", "P", "K", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  // ];
-
-  const initialBoard: ChessBoard = [
-    [" ", " ", " ", " ", "k", " ", " ", " "],
-    ["p", "p", "p", "p", "p", "p", "p", "p"],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    ["P", "P", "P", "P", "P", "P", "P", "P"],
-    [" ", " ", " ", " ", "K", " ", " ", " "],
-  ];
+  const { addPoint, onChangePosition, position, currentTurn, onGameOver } =
+    props;
 
   const [isBoardRotated, setIsBoardRotated] = useState(false);
   const [legalMoves, setLegalMoves] = useState<ChessCoord[]>([]);
 
   const [cellSize, setCellSize] = useState(85);
-  const [board, setBoard] = useState<ChessBoard>(initialBoard);
+  const [board, setBoard] = useState<ChessBoard>(position);
   const [selectedPiece, setSelectedPiece] = useState<[number, number] | null>(
     null
   );
@@ -78,13 +57,13 @@ function MultiplayerChessboard(props: ChessboardProps) {
     }
     if (selectedPiece === null) {
       if (
-        isWhiteTurn &&
+        currentTurn == PlayerTurn.WHITE &&
         board[row][column] === board[row][column].toLowerCase()
       ) {
         return;
       }
       if (
-        !isWhiteTurn &&
+        currentTurn == PlayerTurn.BLACK &&
         board[row][column] === board[row][column].toUpperCase()
       ) {
         return;
@@ -104,7 +83,7 @@ function MultiplayerChessboard(props: ChessboardProps) {
 
   const hasAnyMoves = () => {
     let result = false;
-    if (isWhiteTurn) {
+    if (currentTurn == PlayerTurn.WHITE) {
       board.some((row, i) => {
         row.some((cell, j) => {
           if ("PK".includes(cell) && findLegalMoves(i, j, board).length > 0) {
@@ -113,7 +92,7 @@ function MultiplayerChessboard(props: ChessboardProps) {
         });
       });
     }
-    if (!isWhiteTurn) {
+    if (currentTurn == PlayerTurn.BLACK) {
       board.some((row, i) => {
         row.some((cell, j) => {
           if ("pk".includes(cell) && findLegalMoves(i, j, board).length > 0) {
@@ -127,7 +106,7 @@ function MultiplayerChessboard(props: ChessboardProps) {
 
   const isCheckmateOrStalemate = () => {
     const hasMoves = hasAnyMoves();
-    if (isWhiteTurn) {
+    if (currentTurn == PlayerTurn.WHITE) {
       if (!hasMoves) {
         if (isWhiteChecked(board)) {
           onGameOver(PlayerTurn.BLACK, WinType.CHECKMATE);
@@ -166,15 +145,15 @@ function MultiplayerChessboard(props: ChessboardProps) {
   const movePiece = (i: number, j: number) => {
     if (!selectedPiece) return;
     if (board[selectedPiece![0]][selectedPiece![1]] === "P" && i === 0)
-      addPoint("white");
+      addPoint(PlayerTurn.WHITE);
     if (board[selectedPiece![0]][selectedPiece![1]] === "p" && i === 7)
-      addPoint("black");
+      addPoint(PlayerTurn.BLACK);
     const boardAfterMove = generateBoardAfterMove([...board], selectedPiece, [
       i,
       j,
     ]);
     setBoard(boardAfterMove);
-    sendPosition(boardAfterMove);
+    onChangePosition(boardAfterMove);
     setSelectedPiece(null);
     setLegalMoves([]);
   };

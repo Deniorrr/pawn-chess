@@ -1,6 +1,7 @@
 import MultiplayerChessboard from "../containers/MultiplayerChessboard.js";
 import { Container, Paper, Typography, Grid, Button } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PlayerScores from "../components/PlayerScores.js";
@@ -9,6 +10,7 @@ import io from "socket.io-client";
 import { ChessBoard } from "../types/ChessBoardTypes.js";
 import { PlayerTurn } from "../types/PlayerTurnEnum";
 import { WinType } from "../types/WinTypeEnum";
+import { useAlert } from "../contexts/AlertContext";
 
 function Multiplayer() {
   const [whiteScore, setWhiteScore] = useState(0);
@@ -43,11 +45,32 @@ function Multiplayer() {
     [" ", " ", " ", " ", " ", " ", " ", " "],
   ]);
 
-  const socket = io.connect("http://localhost:3000");
+  const socketRef = useRef(null);
+  const { roomCode } = useParams();
+  const addAlert = useAlert();
+
+  useEffect(() => {
+    socketRef.current = io.connect("http://localhost:3000", {
+      query: { roomCode },
+    });
+
+    socketRef.current.on("connect", () => {
+      console.log("connected to server");
+      addAlert("connected to server", "success");
+    });
+
+    socketRef.current.on("disconnect", () => {
+      console.log("disconnected from server");
+    });
+
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, [roomCode]);
   const switchTurn = () => {
-    console.log("switching turn to ", !isWhiteTurn);
-    setIsWhiteTurn(!isWhiteTurn);
-    //setIsWhiteTurn((prevIsWhiteTurn) => !prevIsWhiteTurn);
+    //console.log("switching turn to ", !isWhiteTurn);
+    //setIsWhiteTurn(!isWhiteTurn);
+    setIsWhiteTurn((prevIsWhiteTurn) => !prevIsWhiteTurn);
   };
 
   // useEffect(() => {
@@ -61,14 +84,19 @@ function Multiplayer() {
   //   });
   // }, [socket, isWhiteTurn]);
 
-  const sendPosition = (position: ChessBoard) => {
-    console.log("sending position", position);
+  const onChangePosition = (position: ChessBoard) => {
+    setPosition(position);
     switchTurn();
-    socket.emit("position", position);
+    // send position to server
+    // recieve position and turn from server
+
+    // console.log("sending position", position);
+    // switchTurn();
+    // socket.emit("position", position);
   };
 
-  const addPoint = (color: string): void => {
-    if (color === "white") {
+  const addPoint = (color: PlayerTurn): void => {
+    if (color === PlayerTurn.WHITE) {
       setWhiteScore(whiteScore + 1);
     } else {
       setBlackScore(blackScore + 1);
@@ -102,14 +130,14 @@ function Multiplayer() {
           <Grid container spacing={1} my={1} alignItems={"center"}>
             <Grid item>
               <MultiplayerChessboard
+                currentTurn={isWhiteTurn ? PlayerTurn.WHITE : PlayerTurn.BLACK}
+                position={position}
+                onChangePosition={onChangePosition}
+                onGameOver={onGameOver}
                 addPoint={addPoint}
                 // endViaCheckmate={endViaCheckmate}
                 // endViaStalemate={endViaStalemate}
                 // endViaMaterial={endViaMaterial}
-                onGameOver={onGameOver}
-                sendPosition={sendPosition}
-                isWhiteTurn={isWhiteTurn}
-                position={position}
               />
             </Grid>
             <Grid item>
@@ -122,14 +150,15 @@ function Multiplayer() {
           </Grid>
         </Paper>
       </Container>
-      <EndScreenNew
-        displayEndScreen={displayEndScreen}
-        winner={winner}
-        winType={winType}
-        score={{ white: whiteScore, black: blackScore }}
-        setDisplayEndScreen={setDisplayEndScreen}
-        //endScreenText={endScreenText}
-      />
+      {displayEndScreen && (
+        <EndScreenNew
+          winner={winner}
+          winType={winType}
+          score={{ white: whiteScore, black: blackScore }}
+          setDisplayEndScreen={setDisplayEndScreen}
+          //endScreenText={endScreenText}
+        />
+      )}
     </>
   );
 }

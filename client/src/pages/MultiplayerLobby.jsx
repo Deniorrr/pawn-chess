@@ -24,7 +24,6 @@ function MultiplayerLobby() {
 
     socketRef.current.on("connect", () => {
       console.log("connected to server");
-      //addAlert("connected to server", "success");
     });
 
     socketRef.current.on("disconnect", () => {
@@ -50,7 +49,7 @@ function MultiplayerLobby() {
     return () => {
       socketRef.current.disconnect();
     };
-  }, [roomCode]);
+  }, []);
   const switchReadyState = () => {
     socketRef.current.emit("changedLobbyState", {});
   };

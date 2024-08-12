@@ -9,6 +9,7 @@ import MultiplayerLobby from "./pages/MultiplayerLobby";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Stockfish from "./pages/Stockfish";
 import { AlertProvider } from "./contexts/AlertContext";
+import { SocketProvider } from "./contexts/SocketContext";
 
 function App() {
   const theme = createTheme({
@@ -22,6 +23,7 @@ function App() {
     <>
       <ThemeProvider theme={theme}>
         <AlertProvider>
+          {/* <SocketProvider> */}
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -34,6 +36,7 @@ function App() {
               <Route path="/lobby/:roomCode" element={<MultiplayerLobby />} />
             </Routes>
           </BrowserRouter>
+          {/* </SocketProvider> */}
         </AlertProvider>
       </ThemeProvider>
     </>
