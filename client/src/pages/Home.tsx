@@ -100,12 +100,10 @@ function Home() {
       </Paper>
       <Outlet />
       <Typography variant="body1" color="textSecondary">
-        &copy; 2024 Denis Poczęty, Paweł Oparczyk
+        &copy; 2024 Denis Poczęty
       </Typography>
     </Container>
   );
 }
 
 export default Home;
-
-//backend endpoint naming conventions

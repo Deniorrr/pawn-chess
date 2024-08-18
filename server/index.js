@@ -16,6 +16,8 @@ const io = new Server(server, {
 
 const rooms = new Rooms();
 
+//backend endpoint naming conventions
+
 io.on("connection", (client) => {
   const roomCode = client.handshake.query.roomCode;
   if (roomCode === undefined) {
@@ -36,6 +38,7 @@ io.on("connection", (client) => {
   client.emit("playerNumber", playerNumber);
 
   client.on("changedLobbyState", () => {
+    console.log("changed lobby state");
     const roomCode = rooms.findRoom(client.id);
     const newRoomState = rooms.changeLobbyState(roomCode, client.id);
     io.to(roomCode).emit("changedLobbyState", newRoomState.lobbyState);

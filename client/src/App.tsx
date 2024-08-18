@@ -23,20 +23,20 @@ function App() {
     <>
       <ThemeProvider theme={theme}>
         <AlertProvider>
-          {/* <SocketProvider> */}
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/local-game" element={<LocalGame />} />
-              <Route path="/stockfish" element={<Stockfish />} />
-              <Route
-                path="/multiplayer/game/:roomCode"
-                element={<Multiplayer />}
-              />
-              <Route path="/lobby/:roomCode" element={<MultiplayerLobby />} />
-            </Routes>
-          </BrowserRouter>
-          {/* </SocketProvider> */}
+          <SocketProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/local-game" element={<LocalGame />} />
+                <Route path="/stockfish" element={<Stockfish />} />
+                <Route
+                  path="/multiplayer/game/:roomCode"
+                  element={<Multiplayer />}
+                />
+                <Route path="/lobby/:roomCode" element={<MultiplayerLobby />} />
+              </Routes>
+            </BrowserRouter>
+          </SocketProvider>
         </AlertProvider>
       </ThemeProvider>
     </>

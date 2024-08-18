@@ -1,57 +1,60 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { io } from "socket.io-client";
 import { Container, Paper, Typography, Grid, Button } from "@mui/material";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAlert } from "../contexts/AlertContext";
+import { useSocket } from "../contexts/SocketContext";
 
 function MultiplayerLobby() {
   const { roomCode } = useParams();
   const navigate = useNavigate();
   const addAlert = useAlert();
+  const { connectSocket } = useSocket();
 
   const [lobbyState, setLobbyState] = useState({
     isPlayer1Ready: false,
     isPlayer2Ready: false,
   });
   const [playerNumber, setPlayerNumber] = useState(0);
-
-  const socketRef = useRef(null);
+  const [socketInstance, setSocketInstance] = useState(null);
 
   useEffect(() => {
-    socketRef.current = io.connect("http://localhost:3000", {
-      query: { roomCode },
-    });
+    const socket = connectSocket(roomCode);
+    setSocketInstance(socket);
 
-    socketRef.current.on("connect", () => {
+    socket.on("connect", () => {
       console.log("connected to server");
     });
 
-    socketRef.current.on("disconnect", () => {
+    socket.on("disconnect", () => {
       console.log("disconnected from server");
     });
 
-    socketRef.current.on("changedLobbyState", (data) => {
+    socket.on("changedLobbyState", (data) => {
       console.log("changed lobby state", data);
       //addAlert("changed lobby state", "info");
       setLobbyState(data);
     });
 
-    socketRef.current.on("playerNumber", (data) => {
+    socket.on("playerNumber", (data) => {
       console.log("player number", data);
       setPlayerNumber(data);
     });
 
-    socketRef.current.on("gameStarted", (data) => {
+    socket.on("gameStarted", (data) => {
       console.log("game started", data);
       addAlert("game started", "info");
       navigate("/multiplayer/game/" + roomCode);
     });
     return () => {
-      socketRef.current.disconnect();
+      socket.off("disconnect");
+      socket.off("changedLobbyState");
+      socket.off("playerNumber");
+      socket.off("gameStarted");
     };
   }, []);
+
   const switchReadyState = () => {
-    socketRef.current.emit("changedLobbyState", {});
+    socketInstance.emit("changedLobbyState", {});
   };
 
   return (

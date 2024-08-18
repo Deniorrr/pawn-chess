@@ -1,7 +1,7 @@
 import MultiplayerChessboard from "../containers/MultiplayerChessboard.js";
 import { Container, Paper, Typography, Grid, Button } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PlayerScores from "../components/PlayerScores.js";
