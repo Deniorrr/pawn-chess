@@ -1,16 +1,16 @@
 import MultiplayerChessboard from "../containers/MultiplayerChessboard.js";
 import { Container, Paper, Typography, Grid, Button } from "@mui/material";
-import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+//import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PlayerScores from "../components/PlayerScores.js";
 import EndScreenNew from "../components/EndScreenNew";
-import io from "socket.io-client";
 import { ChessBoard } from "../types/ChessBoardTypes.js";
 import { PlayerTurn } from "../types/PlayerTurnEnum";
 import { WinType } from "../types/WinTypeEnum";
 import { useAlert } from "../contexts/AlertContext";
+import { useSocket } from "../contexts/SocketContext";
 
 function Multiplayer() {
   const [whiteScore, setWhiteScore] = useState(0);
@@ -19,7 +19,6 @@ function Multiplayer() {
   const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
   const [displayEndScreen, setDisplayEndScreen] = useState(false);
-  //const [endScreenText, setEndScreenText] = useState("");
   const [winner, setWinner] = useState<PlayerTurn>(PlayerTurn.NONE);
   const [winType, setWinType] = useState<WinType>(WinType.MATERIAL);
 
@@ -45,54 +44,29 @@ function Multiplayer() {
     [" ", " ", " ", " ", " ", " ", " ", " "],
   ]);
 
-  const socketRef = useRef(null);
-  const { roomCode } = useParams();
+  const socketInstance = useSocket().socket;
+
   const addAlert = useAlert();
 
   useEffect(() => {
-    socketRef.current = io.connect("http://localhost:3000", {
-      query: { roomCode },
-    });
-
-    socketRef.current.on("connect", () => {
-      console.log("connected to server");
-      addAlert("connected to server", "success");
-    });
-
-    socketRef.current.on("disconnect", () => {
-      console.log("disconnected from server");
+    socketInstance.on("position", () => {
+      console.log("recieved position");
+      addAlert("recieved position", "success");
     });
 
     return () => {
-      socketRef.current.disconnect();
+      socketInstance.disconnect();
     };
-  }, [roomCode]);
+  }, []);
+
   const switchTurn = () => {
-    //console.log("switching turn to ", !isWhiteTurn);
-    //setIsWhiteTurn(!isWhiteTurn);
     setIsWhiteTurn((prevIsWhiteTurn) => !prevIsWhiteTurn);
   };
-
-  // useEffect(() => {
-  //   socket.on("color", (data: string) => {
-  //     console.log(data);
-  //   });
-  //   socket.on("position", (data) => {
-  //     console.log("recieved position", data);
-  //     switchTurn();
-  //     setPosition(data);
-  //   });
-  // }, [socket, isWhiteTurn]);
 
   const onChangePosition = (position: ChessBoard) => {
     setPosition(position);
     switchTurn();
-    // send position to server
-    // recieve position and turn from server
-
-    // console.log("sending position", position);
-    // switchTurn();
-    // socket.emit("position", position);
+    socketInstance.emit("position", position);
   };
 
   const addPoint = (color: PlayerTurn): void => {
@@ -135,9 +109,6 @@ function Multiplayer() {
                 onChangePosition={onChangePosition}
                 onGameOver={onGameOver}
                 addPoint={addPoint}
-                // endViaCheckmate={endViaCheckmate}
-                // endViaStalemate={endViaStalemate}
-                // endViaMaterial={endViaMaterial}
               />
             </Grid>
             <Grid item>
@@ -156,7 +127,6 @@ function Multiplayer() {
           winType={winType}
           score={{ white: whiteScore, black: blackScore }}
           setDisplayEndScreen={setDisplayEndScreen}
-          //endScreenText={endScreenText}
         />
       )}
     </>

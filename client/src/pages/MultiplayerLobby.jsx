@@ -21,17 +21,8 @@ function MultiplayerLobby() {
     const socket = connectSocket(roomCode);
     setSocketInstance(socket);
 
-    socket.on("connect", () => {
-      console.log("connected to server");
-    });
-
-    socket.on("disconnect", () => {
-      console.log("disconnected from server");
-    });
-
     socket.on("changedLobbyState", (data) => {
       console.log("changed lobby state", data);
-      //addAlert("changed lobby state", "info");
       setLobbyState(data);
     });
 

@@ -38,13 +38,17 @@ io.on("connection", (client) => {
   client.emit("playerNumber", playerNumber);
 
   client.on("changedLobbyState", () => {
-    console.log("changed lobby state");
     const roomCode = rooms.findRoom(client.id);
     const newRoomState = rooms.changeLobbyState(roomCode, client.id);
     io.to(roomCode).emit("changedLobbyState", newRoomState.lobbyState);
     if (newRoomState.hasGameStarted) {
       io.to(roomCode).emit("gameStarted");
     }
+  });
+
+  client.on("position", (data) => {
+    const roomCode = rooms.findRoom(client.id);
+    client.to(roomCode).emit("position", data);
   });
 
   client.on("disconnect", () => {
