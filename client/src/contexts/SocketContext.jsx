@@ -22,21 +22,25 @@ export const SocketProvider = ({ children }) => {
   const addAlert = useAlert();
 
   const connectSocket = (roomCode) => {
-    if (!socketRef.current) {
-      const newSocket = io.connect(socketUrl, {
-        query: { roomCode },
-      });
-
-      newSocket.on("connect", () => {
-        addAlert("connected to server", "info");
-      });
-
-      newSocket.on("disconnect", () => {
-        addAlert("disconnected from server", "info");
-      });
-
-      socketRef.current = newSocket;
+    //disconnect from previous socket
+    if (socketRef.current) {
+      socketRef.current.disconnect();
     }
+    //if (!socketRef.current) {
+    const newSocket = io.connect(socketUrl, {
+      query: { roomCode },
+    });
+
+    newSocket.on("connect", () => {
+      addAlert("connected to server", "info");
+    });
+
+    newSocket.on("disconnect", () => {
+      addAlert("disconnected from server", "info");
+    });
+
+    socketRef.current = newSocket;
+    //}
     return socketRef.current;
   };
 

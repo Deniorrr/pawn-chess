@@ -1,3 +1,5 @@
+const initialBoard = require("../constants/initialBoard");
+
 class Rooms {
   constructor() {
     this.data = {};
@@ -11,6 +13,7 @@ class Rooms {
         isPlayer2Ready: false,
       },
       hasGameStarted: false,
+      board: initialBoard,
     };
   }
 
@@ -61,6 +64,10 @@ class Rooms {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  updateBoard(roomCode, newBoard) {
+    this.data[roomCode].board = newBoard;
   }
 
   disconnectPlayer(playerId) {

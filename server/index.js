@@ -15,6 +15,7 @@ const io = new Server(server, {
 });
 
 const rooms = new Rooms();
+const generateBoardAfterMove = require("./utils/gameLogic/generateBoardAfterMove");
 
 //backend endpoint naming conventions
 
@@ -46,9 +47,17 @@ io.on("connection", (client) => {
     }
   });
 
-  client.on("position", (data) => {
+  // client.on("position", (data) => {
+  //   const roomCode = rooms.findRoom(client.id);
+  //   client.to(roomCode).emit("position", data);
+  // });
+  client.on("move", (data) => {
+    console.log(data);
     const roomCode = rooms.findRoom(client.id);
-    client.to(roomCode).emit("position", data);
+    const board = rooms.data[roomCode].board;
+    const newBoard = generateBoardAfterMove(board, data.from, data.to);
+    rooms.updateBoard(roomCode, newBoard);
+    io.to(roomCode).emit("move", newBoard);
   });
 
   client.on("disconnect", () => {

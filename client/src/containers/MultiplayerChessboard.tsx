@@ -22,7 +22,11 @@ MultiplayerChessboard.propTypes = {
 
 interface ChessboardProps {
   currentTurn: PlayerTurn;
-  onChangePosition: (position: ChessBoard) => void;
+  onChangePosition: (
+    from: ChessCoord,
+    to: ChessCoord,
+    chessboard: ChessBoard
+  ) => void;
   position: ChessBoard;
   onGameOver: (winner: PlayerTurn, winType: WinType) => void;
   addPoint: (player: PlayerTurn) => void;
@@ -148,12 +152,16 @@ function MultiplayerChessboard(props: ChessboardProps) {
       addPoint(PlayerTurn.WHITE);
     if (board[selectedPiece![0]][selectedPiece![1]] === "p" && i === 7)
       addPoint(PlayerTurn.BLACK);
-    const boardAfterMove = generateBoardAfterMove([...board], selectedPiece, [
-      i,
-      j,
-    ]);
+    const selectedPosition: ChessCoord = [i, j];
+    const boardAfterMove = generateBoardAfterMove(
+      [...board],
+      selectedPiece,
+      selectedPosition
+    );
+
     setBoard(boardAfterMove);
-    onChangePosition(boardAfterMove);
+    //onChangePosition(boardAfterMove);
+    onChangePosition(selectedPiece, selectedPosition, boardAfterMove);
     setSelectedPiece(null);
     setLegalMoves([]);
   };

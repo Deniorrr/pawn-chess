@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PlayerScores from "../components/PlayerScores.js";
 import EndScreenNew from "../components/EndScreenNew";
-import { ChessBoard } from "../types/ChessBoardTypes.js";
+import { ChessBoard, ChessCoord } from "../types/ChessBoardTypes.js";
 import { PlayerTurn } from "../types/PlayerTurnEnum";
 import { WinType } from "../types/WinTypeEnum";
 import { useAlert } from "../contexts/AlertContext";
@@ -22,36 +22,37 @@ function Multiplayer() {
   const [winner, setWinner] = useState<PlayerTurn>(PlayerTurn.NONE);
   const [winType, setWinType] = useState<WinType>(WinType.MATERIAL);
 
-  // const [position, setPosition] = useState<ChessBoard>([
-  //   [" ", " ", " ", " ", "k", " ", " ", " "],
-  //   ["p", "p", "p", "p", "p", "p", "p", "p"],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   ["P", "P", "P", "P", "P", "P", "P", "P"],
-  //   [" ", " ", " ", " ", "K", " ", " ", " "],
-  // ]);
-
   const [position, setPosition] = useState<ChessBoard>([
     [" ", " ", " ", " ", "k", " ", " ", " "],
-    [" ", " ", " ", " ", "p", "P", " ", " "],
-    [" ", " ", " ", "P", "K", " ", " ", " "],
+    ["p", "p", "p", "p", "p", "p", "p", "p"],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
+    ["P", "P", "P", "P", "P", "P", "P", "P"],
+    [" ", " ", " ", " ", "K", " ", " ", " "],
   ]);
+
+  // const [position, setPosition] = useState<ChessBoard>([
+  //   [" ", " ", " ", " ", "k", " ", " ", " "],
+  //   [" ", " ", " ", " ", "p", "P", " ", " "],
+  //   [" ", " ", " ", "P", "K", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  // ]);
 
   const socketInstance = useSocket().socket;
 
   const addAlert = useAlert();
 
   useEffect(() => {
-    socketInstance.on("position", () => {
-      console.log("recieved position");
-      addAlert("recieved position", "success");
+    socketInstance.on("move", (data: ChessBoard) => {
+      console.log("recieved position", data);
+      setPosition(data);
+      switchTurn();
     });
 
     return () => {
@@ -63,10 +64,13 @@ function Multiplayer() {
     setIsWhiteTurn((prevIsWhiteTurn) => !prevIsWhiteTurn);
   };
 
-  const onChangePosition = (position: ChessBoard) => {
-    setPosition(position);
-    switchTurn();
-    socketInstance.emit("position", position);
+  const onChangePosition = (
+    from: ChessCoord,
+    to: ChessCoord,
+    chessboard: ChessBoard
+  ) => {
+    setPosition(chessboard);
+    socketInstance.emit("move", { from, to });
   };
 
   const addPoint = (color: PlayerTurn): void => {
