@@ -1,5 +1,5 @@
 import { Button, Grid, Paper } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { brown } from "@mui/material/colors";
 import k from "../assets/k.svg";
 import kw from "../assets/kw.svg";
@@ -18,6 +18,7 @@ MultiplayerChessboard.propTypes = {
   currentTurn: PropTypes.string.isRequired,
   onGameOver: PropTypes.func.isRequired,
   addPoint: PropTypes.func.isRequired,
+  playerColor: PropTypes.string.isRequired,
 };
 
 interface ChessboardProps {
@@ -27,20 +28,26 @@ interface ChessboardProps {
     to: ChessCoord,
     chessboard: ChessBoard
   ) => void;
-  position: ChessBoard;
+  board: ChessBoard;
   onGameOver: (winner: PlayerTurn, winType: WinType) => void;
   addPoint: (player: PlayerTurn) => void;
+  playerColor: PlayerTurn;
 }
 
 function MultiplayerChessboard(props: ChessboardProps) {
-  const { addPoint, onChangePosition, position, currentTurn, onGameOver } =
-    props;
+  const {
+    addPoint,
+    onChangePosition,
+    board,
+    currentTurn,
+    onGameOver,
+    playerColor,
+  } = props;
 
   const [isBoardRotated, setIsBoardRotated] = useState(false);
   const [legalMoves, setLegalMoves] = useState<ChessCoord[]>([]);
 
   const [cellSize, setCellSize] = useState(85);
-  const [board, setBoard] = useState<ChessBoard>(position);
   const [selectedPiece, setSelectedPiece] = useState<[number, number] | null>(
     null
   );
@@ -49,12 +56,13 @@ function MultiplayerChessboard(props: ChessboardProps) {
     return JSON.stringify(a) === JSON.stringify(b) ? true : false;
   };
 
-  useEffect(() => {
-    setBoard(position);
-  }, [position]);
-
   const selectPiece = (row: number, column: number) => {
-    //if (isPlayingVsBot && !isWhiteTurn) return;
+    if (
+      playerColor.toString().toUpperCase() !==
+      PlayerTurn[currentTurn].toString().toUpperCase()
+    )
+      return;
+
     if (areObjectsSame(selectedPiece, [row, column])) {
       setLegalMoves([]);
       return setSelectedPiece(null);
@@ -141,11 +149,6 @@ function MultiplayerChessboard(props: ChessboardProps) {
     }
   };
 
-  useEffect(() => {
-    isCheckmateOrStalemate();
-    isMaterialDraw();
-  }, [board]);
-
   const movePiece = (i: number, j: number) => {
     if (!selectedPiece) return;
     if (board[selectedPiece![0]][selectedPiece![1]] === "P" && i === 0)
@@ -159,9 +162,11 @@ function MultiplayerChessboard(props: ChessboardProps) {
       selectedPosition
     );
 
-    setBoard(boardAfterMove);
-    //onChangePosition(boardAfterMove);
     onChangePosition(selectedPiece, selectedPosition, boardAfterMove);
+    //check end game conditions
+    isCheckmateOrStalemate();
+    isMaterialDraw();
+    //
     setSelectedPiece(null);
     setLegalMoves([]);
   };

@@ -5,8 +5,9 @@ function PlayerScores(props: {
   whiteScore: number;
   blackScore: number;
   isWhiteTurn: boolean;
+  playerColor: string;
 }) {
-  const { whiteScore, blackScore, isWhiteTurn } = props;
+  const { whiteScore, blackScore, isWhiteTurn, playerColor } = props;
   return (
     <>
       <Paper
@@ -24,7 +25,9 @@ function PlayerScores(props: {
         <Paper style={{ width: "3em", textAlign: "center", margin: "15px" }}>
           <Typography variant="h4">{blackScore}</Typography>
         </Paper>
-        <Typography variant="h4">Black player</Typography>
+        <Typography variant="h4">
+          Black player {playerColor == "black" && "(you)"}
+        </Typography>
       </Paper>
       <Paper
         elevation={isWhiteTurn ? 24 : 3}
@@ -43,7 +46,9 @@ function PlayerScores(props: {
         >
           <Typography variant="h4">{whiteScore}</Typography>
         </Paper>
-        <Typography variant="h4">White player</Typography>
+        <Typography variant="h4">
+          White player {playerColor == "white" && "(you)"}
+        </Typography>
       </Paper>
     </>
   );

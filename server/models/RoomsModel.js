@@ -1,4 +1,5 @@
 const initialBoard = require("../constants/initialBoard");
+const getInitialBoardCopy = () => JSON.parse(JSON.stringify(initialBoard));
 
 class Rooms {
   constructor() {
@@ -13,7 +14,8 @@ class Rooms {
         isPlayer2Ready: false,
       },
       hasGameStarted: false,
-      board: initialBoard,
+      isWhiteTurn: true,
+      board: getInitialBoardCopy(),
     };
   }
 
@@ -42,9 +44,15 @@ class Rooms {
   }
 
   getPlayersColor(roomCode, playerId) {
+    // return this.data[roomCode].players.indexOf(playerId) === 0
+    //   ? "white"
+    //   : "black";
+
     return this.data[roomCode].players.indexOf(playerId) === 0
       ? "white"
-      : "black";
+      : this.data[roomCode].players.indexOf(playerId) === 1
+      ? "black"
+      : "none";
   }
 
   changeLobbyState(roomCode, playerId) {
@@ -68,6 +76,7 @@ class Rooms {
 
   updateBoard(roomCode, newBoard) {
     this.data[roomCode].board = newBoard;
+    this.data[roomCode].isWhiteTurn = !this.data[roomCode].isWhiteTurn;
   }
 
   disconnectPlayer(playerId) {

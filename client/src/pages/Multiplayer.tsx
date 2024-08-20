@@ -21,6 +21,7 @@ function Multiplayer() {
   const [displayEndScreen, setDisplayEndScreen] = useState(false);
   const [winner, setWinner] = useState<PlayerTurn>(PlayerTurn.NONE);
   const [winType, setWinType] = useState<WinType>(WinType.MATERIAL);
+  const [playerColor, setPlayerColor] = useState<PlayerTurn>(PlayerTurn.NONE);
 
   const [position, setPosition] = useState<ChessBoard>([
     [" ", " ", " ", " ", "k", " ", " ", " "],
@@ -49,8 +50,13 @@ function Multiplayer() {
   const addAlert = useAlert();
 
   useEffect(() => {
+    socketInstance.emit("getColor");
+
+    socketInstance.on("getColor", (color: PlayerTurn) => {
+      setPlayerColor(color);
+    });
+
     socketInstance.on("move", (data: ChessBoard) => {
-      console.log("recieved position", data);
       setPosition(data);
       switchTurn();
     });
@@ -109,10 +115,11 @@ function Multiplayer() {
             <Grid item>
               <MultiplayerChessboard
                 currentTurn={isWhiteTurn ? PlayerTurn.WHITE : PlayerTurn.BLACK}
-                position={position}
+                board={position}
                 onChangePosition={onChangePosition}
                 onGameOver={onGameOver}
                 addPoint={addPoint}
+                playerColor={playerColor}
               />
             </Grid>
             <Grid item>
@@ -120,6 +127,7 @@ function Multiplayer() {
                 whiteScore={whiteScore}
                 blackScore={blackScore}
                 isWhiteTurn={isWhiteTurn}
+                playerColor={playerColor.toString()}
               />
             </Grid>
           </Grid>

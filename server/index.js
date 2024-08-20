@@ -51,11 +51,19 @@ io.on("connection", (client) => {
   //   const roomCode = rooms.findRoom(client.id);
   //   client.to(roomCode).emit("position", data);
   // });
-  client.on("move", (data) => {
-    console.log(data);
+  client.on("getColor", () => {
     const roomCode = rooms.findRoom(client.id);
+    const color = rooms.getPlayersColor(roomCode, client.id);
+    client.emit("getColor", color);
+  });
+
+  client.on("move", (moveData) => {
+    const roomCode = rooms.findRoom(client.id);
+    const playerColor = rooms.getPlayersColor(roomCode, client.id);
+    if (playerColor === "black" && rooms.data[roomCode].isWhiteTurn) return;
+    if (playerColor === "white" && !rooms.data[roomCode].isWhiteTurn) return;
     const board = rooms.data[roomCode].board;
-    const newBoard = generateBoardAfterMove(board, data.from, data.to);
+    const newBoard = generateBoardAfterMove(board, moveData.from, moveData.to);
     rooms.updateBoard(roomCode, newBoard);
     io.to(roomCode).emit("move", newBoard);
   });
