@@ -16,6 +16,7 @@ class Rooms {
       hasGameStarted: false,
       isWhiteTurn: true,
       board: getInitialBoardCopy(),
+      scores: { white: 0, black: 0 },
     };
   }
 
@@ -77,6 +78,12 @@ class Rooms {
   updateBoard(roomCode, newBoard) {
     this.data[roomCode].board = newBoard;
     this.data[roomCode].isWhiteTurn = !this.data[roomCode].isWhiteTurn;
+  }
+
+  addPoint(roomCode, color) {
+    color == "white"
+      ? this.data[roomCode].scores.white++
+      : this.data[roomCode].scores.black++;
   }
 
   disconnectPlayer(playerId) {

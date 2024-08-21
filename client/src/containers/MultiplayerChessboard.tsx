@@ -93,21 +93,21 @@ function MultiplayerChessboard(props: ChessboardProps) {
     setSelectedPiece(null);
   };
 
-  const hasAnyMoves = () => {
+  const hasAnyMoves = (_board: ChessBoard, _currentTurn: PlayerTurn) => {
     let result = false;
-    if (currentTurn == PlayerTurn.WHITE) {
-      board.some((row, i) => {
+    if (_currentTurn == PlayerTurn.WHITE) {
+      _board.some((row, i) => {
         row.some((cell, j) => {
-          if ("PK".includes(cell) && findLegalMoves(i, j, board).length > 0) {
+          if ("PK".includes(cell) && findLegalMoves(i, j, _board).length > 0) {
             result = true;
           }
         });
       });
     }
-    if (currentTurn == PlayerTurn.BLACK) {
-      board.some((row, i) => {
+    if (_currentTurn == PlayerTurn.BLACK) {
+      _board.some((row, i) => {
         row.some((cell, j) => {
-          if ("pk".includes(cell) && findLegalMoves(i, j, board).length > 0) {
+          if ("pk".includes(cell) && findLegalMoves(i, j, _board).length > 0) {
             result = true;
           }
         });
@@ -116,32 +116,43 @@ function MultiplayerChessboard(props: ChessboardProps) {
     return result;
   };
 
-  const isCheckmateOrStalemate = () => {
-    const hasMoves = hasAnyMoves();
-    if (currentTurn == PlayerTurn.WHITE) {
+  const isCheckmateOrStalemate = (
+    _board: ChessBoard,
+    _currentTurn: PlayerTurn
+  ) => {
+    const nextTurn =
+      _currentTurn === PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
+    console.log("isCheckmateOrStalemate");
+    const hasMoves = hasAnyMoves(_board, nextTurn);
+    if (nextTurn == PlayerTurn.WHITE) {
+      console.log("has moves", hasMoves);
       if (!hasMoves) {
-        if (isWhiteChecked(board)) {
+        if (isWhiteChecked(_board)) {
+          console.log("game over");
           onGameOver(PlayerTurn.BLACK, WinType.CHECKMATE);
         } else {
+          console.log("game over");
           onGameOver(PlayerTurn.NONE, WinType.STALEMATE);
         }
       }
     } else {
       if (!hasMoves) {
-        if (isBlackChecked(board)) {
+        if (isBlackChecked(_board)) {
+          console.log("game over");
           onGameOver(PlayerTurn.WHITE, WinType.CHECKMATE);
         } else {
+          console.log("game over");
           onGameOver(PlayerTurn.NONE, WinType.STALEMATE);
         }
       }
     }
   };
 
-  const isMaterialDraw = () => {
-    const whitePieces = board
+  const isMaterialDraw = (_board: ChessBoard) => {
+    const whitePieces = _board
       .flat()
       .filter((piece) => "PK".includes(piece)).length;
-    const blackPieces = board
+    const blackPieces = _board
       .flat()
       .filter((piece) => "pk".includes(piece)).length;
     if (whitePieces === 1 && blackPieces === 1) {
@@ -152,6 +163,7 @@ function MultiplayerChessboard(props: ChessboardProps) {
   const movePiece = (i: number, j: number) => {
     if (!selectedPiece) return;
     if (board[selectedPiece![0]][selectedPiece![1]] === "P" && i === 0)
+      //if pawn reaches the end of the board
       addPoint(PlayerTurn.WHITE);
     if (board[selectedPiece![0]][selectedPiece![1]] === "p" && i === 7)
       addPoint(PlayerTurn.BLACK);
@@ -161,11 +173,12 @@ function MultiplayerChessboard(props: ChessboardProps) {
       selectedPiece,
       selectedPosition
     );
-
+    const _currentTurn = currentTurn;
     onChangePosition(selectedPiece, selectedPosition, boardAfterMove);
     //check end game conditions
-    isCheckmateOrStalemate();
-    isMaterialDraw();
+
+    isCheckmateOrStalemate(boardAfterMove, _currentTurn);
+    isMaterialDraw(boardAfterMove);
     //
     setSelectedPiece(null);
     setLegalMoves([]);

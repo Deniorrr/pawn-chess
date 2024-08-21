@@ -63,9 +63,24 @@ io.on("connection", (client) => {
     if (playerColor === "black" && rooms.data[roomCode].isWhiteTurn) return;
     if (playerColor === "white" && !rooms.data[roomCode].isWhiteTurn) return;
     const board = rooms.data[roomCode].board;
+    //check if needs to add point
+    if (
+      board[moveData.from[0]][moveData.from[1]] === "P" &&
+      moveData.to[0] === 0
+    )
+      rooms.addPoint(roomCode, "white");
+    if (
+      board[moveData.from[0]][moveData.from[1]] === "p" &&
+      moveData.to[0] === 7
+    )
+      rooms.addPoint(roomCode, "black");
     const newBoard = generateBoardAfterMove(board, moveData.from, moveData.to);
     rooms.updateBoard(roomCode, newBoard);
-    io.to(roomCode).emit("move", newBoard);
+    const updatedData = {
+      newBoard,
+      scores: rooms.data[roomCode].scores,
+    };
+    io.to(roomCode).emit("move", updatedData);
   });
 
   client.on("disconnect", () => {

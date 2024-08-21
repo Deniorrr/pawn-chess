@@ -23,27 +23,27 @@ function Multiplayer() {
   const [winType, setWinType] = useState<WinType>(WinType.MATERIAL);
   const [playerColor, setPlayerColor] = useState<PlayerTurn>(PlayerTurn.NONE);
 
-  const [position, setPosition] = useState<ChessBoard>([
-    [" ", " ", " ", " ", "k", " ", " ", " "],
-    ["p", "p", "p", "p", "p", "p", "p", "p"],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    ["P", "P", "P", "P", "P", "P", "P", "P"],
-    [" ", " ", " ", " ", "K", " ", " ", " "],
-  ]);
-
   // const [position, setPosition] = useState<ChessBoard>([
   //   [" ", " ", " ", " ", "k", " ", " ", " "],
-  //   [" ", " ", " ", " ", "p", "P", " ", " "],
-  //   [" ", " ", " ", "P", "K", " ", " ", " "],
+  //   ["p", "p", "p", "p", "p", "p", "p", "p"],
   //   [" ", " ", " ", " ", " ", " ", " ", " "],
   //   [" ", " ", " ", " ", " ", " ", " ", " "],
   //   [" ", " ", " ", " ", " ", " ", " ", " "],
   //   [" ", " ", " ", " ", " ", " ", " ", " "],
-  //   [" ", " ", " ", " ", " ", " ", " ", " "],
+  //   ["P", "P", "P", "P", "P", "P", "P", "P"],
+  //   [" ", " ", " ", " ", "K", " ", " ", " "],
   // ]);
+
+  const [position, setPosition] = useState<ChessBoard>([
+    [" ", " ", " ", " ", "k", " ", " ", " "],
+    [" ", " ", " ", " ", "p", "P", " ", " "],
+    [" ", " ", " ", "P", "K", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+  ]);
 
   const socketInstance = useSocket().socket;
 
@@ -56,10 +56,19 @@ function Multiplayer() {
       setPlayerColor(color);
     });
 
-    socketInstance.on("move", (data: ChessBoard) => {
-      setPosition(data);
-      switchTurn();
-    });
+    socketInstance.on(
+      "move",
+      (data: {
+        newBoard: ChessBoard;
+        scores: { white: number; black: number };
+      }) => {
+        console.log(data);
+        setPosition(data.newBoard);
+        setWhiteScore(data.scores.white);
+        setBlackScore(data.scores.black);
+        switchTurn();
+      }
+    );
 
     return () => {
       socketInstance.disconnect();
