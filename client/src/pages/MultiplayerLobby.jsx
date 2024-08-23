@@ -22,17 +22,14 @@ function MultiplayerLobby() {
     setSocketInstance(socket);
 
     socket.on("changedLobbyState", (data) => {
-      console.log("changed lobby state", data);
       setLobbyState(data);
     });
 
     socket.on("playerNumber", (data) => {
-      console.log("player number", data);
       setPlayerNumber(data);
     });
 
-    socket.on("gameStarted", (data) => {
-      console.log("game started", data);
+    socket.on("gameStarted", () => {
       addAlert("game started", "info");
       navigate("/multiplayer/game/" + roomCode);
     });

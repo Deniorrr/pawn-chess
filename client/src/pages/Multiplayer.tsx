@@ -58,10 +58,10 @@ function Multiplayer() {
     socketInstance.on(
       "move",
       (data: {
-        newBoard: ChessBoard;
+        board: ChessBoard;
         scores: { white: number; black: number };
       }) => {
-        setPosition(data.newBoard);
+        setPosition(data.board);
         setWhiteScore(data.scores.white);
         setBlackScore(data.scores.black);
         switchTurn();
@@ -77,11 +77,11 @@ function Multiplayer() {
           winType: "material" | "checkmate" | "stalemate" | "timeout"; //maybe timeout will be implemented one day
         };
         updatedData: {
-          newBoard: ChessBoard;
+          board: ChessBoard;
           scores: { white: number; black: number };
         };
       }) => {
-        setPosition(data.updatedData.newBoard);
+        setPosition(data.updatedData.board);
         setWhiteScore(data.updatedData.scores.white);
         setBlackScore(data.updatedData.scores.black);
         onGameOver(

@@ -1,8 +1,4 @@
-//import { generateBoardAfterMove } from "./generateBoardAfterMove.js";
 const generateBoardAfterMove = require("./generateBoardAfterMove.js");
-
-// import { isWhiteChecked } from "./isWhiteChecked.js";
-// import { isBlackChecked } from "./isBlackChecked.js";
 const isWhiteChecked = require("./isWhiteChecked.js");
 const isBlackChecked = require("./isBlackChecked.js");
 

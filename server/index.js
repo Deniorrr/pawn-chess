@@ -15,7 +15,6 @@ const io = new Server(server, {
 });
 
 const rooms = new Rooms();
-const generateBoardAfterMove = require("./utils/gameLogic/generateBoardAfterMove");
 const checkEndGameConditions = require("./utils/gameLogic/checkEndGameConditions");
 
 //backend endpoint naming conventions
@@ -48,10 +47,6 @@ io.on("connection", (client) => {
     }
   });
 
-  // client.on("position", (data) => {
-  //   const roomCode = rooms.findRoom(client.id);
-  //   client.to(roomCode).emit("position", data);
-  // });
   client.on("getColor", () => {
     const roomCode = rooms.findRoom(client.id);
     const color = rooms.getPlayersColor(roomCode, client.id);
@@ -63,30 +58,13 @@ io.on("connection", (client) => {
     const playerColor = rooms.getPlayersColor(roomCode, client.id);
     if (playerColor === "black" && rooms.data[roomCode].isWhiteTurn) return;
     if (playerColor === "white" && !rooms.data[roomCode].isWhiteTurn) return;
-    const board = rooms.data[roomCode].board;
-    //check if needs to add point
-    if (
-      board[moveData.from[0]][moveData.from[1]] === "P" &&
-      moveData.to[0] === 0
-    )
-      rooms.addPoint(roomCode, "white");
-    if (
-      board[moveData.from[0]][moveData.from[1]] === "p" &&
-      moveData.to[0] === 7
-    )
-      rooms.addPoint(roomCode, "black");
-    const newBoard = generateBoardAfterMove(board, moveData.from, moveData.to);
-    rooms.updateBoard(roomCode, newBoard);
-    const updatedData = {
-      newBoard,
-      scores: rooms.data[roomCode].scores,
-    };
-    console.log(
-      checkEndGameConditions(newBoard, rooms.data[roomCode].isWhiteTurn)
-    );
+
+    rooms.executeMove(roomCode, moveData);
+    const updatedData = rooms.getGameData(roomCode);
+
     const endGameConditions = checkEndGameConditions(
-      newBoard,
-      rooms.data[roomCode].isWhiteTurn
+      updatedData.board,
+      updatedData.isWhiteTurn
     );
     //example return: { gameOver: true, winner: "none", winType: "material" };
     if (endGameConditions.gameOver) {

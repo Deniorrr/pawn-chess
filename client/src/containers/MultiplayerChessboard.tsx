@@ -1,5 +1,5 @@
 import { Button, Grid, Paper } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { brown } from "@mui/material/colors";
 import k from "../assets/k.svg";
 import kw from "../assets/kw.svg";
@@ -7,15 +7,12 @@ import p from "../assets/p.svg";
 import pw from "../assets/pw.svg";
 import { findLegalMoves } from "../utils/gameLogic/findLegalMoves.js";
 import { generateBoardAfterMove } from "../utils/gameLogic/generateBoardAfterMove.js";
-//import { isWhiteChecked } from "../utils/gameLogic/isWhiteChecked.js";
-//import { isBlackChecked } from "../utils/gameLogic/isBlackChecked.js";
 import PropTypes from "prop-types";
 import { ChessBoard, ChessCoord, ChessSquare } from "../types/ChessBoardTypes";
 import { PlayerTurn } from "../types/PlayerTurnType";
 
 MultiplayerChessboard.propTypes = {
   currentTurn: PropTypes.string.isRequired,
-  //onGameOver: PropTypes.func.isRequired,
   addPoint: PropTypes.func.isRequired,
   playerColor: PropTypes.string.isRequired,
 };
@@ -28,22 +25,19 @@ interface ChessboardProps {
     chessboard: ChessBoard
   ) => void;
   board: ChessBoard;
-  //onGameOver: (winner: PlayerTurn, winType: WinType) => void;
   addPoint: (player: PlayerTurn) => void;
   playerColor: PlayerTurn;
 }
 
 function MultiplayerChessboard(props: ChessboardProps) {
-  const {
-    addPoint,
-    onChangePosition,
-    board,
-    currentTurn,
-    //onGameOver,
-    playerColor,
-  } = props;
+  const { addPoint, onChangePosition, board, currentTurn, playerColor } = props;
 
   const [isBoardRotated, setIsBoardRotated] = useState(false);
+
+  useEffect(() => {
+    playerColor === "black" && setIsBoardRotated(true);
+  }, [playerColor]);
+
   const [legalMoves, setLegalMoves] = useState<ChessCoord[]>([]);
 
   const [cellSize, setCellSize] = useState(85);
@@ -88,72 +82,6 @@ function MultiplayerChessboard(props: ChessboardProps) {
     setSelectedPiece(null);
   };
 
-  // const hasAnyMoves = (_board: ChessBoard, _currentTurn: PlayerTurn) => {
-  //   let result = false;
-  //   if (_currentTurn == PlayerTurn.WHITE) {
-  //     _board.some((row, i) => {
-  //       row.some((cell, j) => {
-  //         if ("PK".includes(cell) && findLegalMoves(i, j, _board).length > 0) {
-  //           result = true;
-  //         }
-  //       });
-  //     });
-  //   }
-  //   if (_currentTurn == PlayerTurn.BLACK) {
-  //     _board.some((row, i) => {
-  //       row.some((cell, j) => {
-  //         if ("pk".includes(cell) && findLegalMoves(i, j, _board).length > 0) {
-  //           result = true;
-  //         }
-  //       });
-  //     });
-  //   }
-  //   return result;
-  // };
-
-  // const isCheckmateOrStalemate = (
-  //   _board: ChessBoard,
-  //   _currentTurn: PlayerTurn
-  // ) => {
-  //   const nextTurn =
-  //     _currentTurn === PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
-  //   const hasMoves = hasAnyMoves(_board, nextTurn);
-  //   if (nextTurn == PlayerTurn.WHITE) {
-  //     console.log("has moves", hasMoves);
-  //     if (!hasMoves) {
-  //       if (isWhiteChecked(_board)) {
-  //         console.log("game over");
-  //         onGameOver(PlayerTurn.BLACK, WinType.CHECKMATE);
-  //       } else {
-  //         console.log("game over");
-  //         onGameOver(PlayerTurn.NONE, WinType.STALEMATE);
-  //       }
-  //     }
-  //   } else {
-  //     if (!hasMoves) {
-  //       if (isBlackChecked(_board)) {
-  //         console.log("game over");
-  //         onGameOver(PlayerTurn.WHITE, WinType.CHECKMATE);
-  //       } else {
-  //         console.log("game over");
-  //         onGameOver(PlayerTurn.NONE, WinType.STALEMATE);
-  //       }
-  //     }
-  //   }
-  // };
-
-  // const isMaterialDraw = (_board: ChessBoard) => {
-  //   const whitePieces = _board
-  //     .flat()
-  //     .filter((piece) => "PK".includes(piece)).length;
-  //   const blackPieces = _board
-  //     .flat()
-  //     .filter((piece) => "pk".includes(piece)).length;
-  //   if (whitePieces === 1 && blackPieces === 1) {
-  //     onGameOver(PlayerTurn.NONE, WinType.MATERIAL);
-  //   }
-  // };
-
   const movePiece = (i: number, j: number) => {
     if (!selectedPiece) return;
     if (board[selectedPiece![0]][selectedPiece![1]] === "P" && i === 0)
@@ -167,13 +95,7 @@ function MultiplayerChessboard(props: ChessboardProps) {
       selectedPiece,
       selectedPosition
     );
-    //const _currentTurn = currentTurn;
     onChangePosition(selectedPiece, selectedPosition, boardAfterMove);
-    //check end game conditions
-
-    //isCheckmateOrStalemate(boardAfterMove, _currentTurn);
-    //isMaterialDraw(boardAfterMove);
-    //
     setSelectedPiece(null);
     setLegalMoves([]);
   };
@@ -250,7 +172,7 @@ function MultiplayerChessboard(props: ChessboardProps) {
             elevation={24}
             style={{
               transform: isBoardRotated ? "rotate(180deg)" : "none",
-              transition: "transform 0.5s",
+              //transition: "transform 0.5s",
             }}
           >
             {board.map((row, i) => (
@@ -269,7 +191,7 @@ function MultiplayerChessboard(props: ChessboardProps) {
                         boxSizing: "border-box",
                         border: generateBorder(i, j),
                         transform: isBoardRotated ? "rotate(-180deg)" : "none",
-                        transition: "transform 0.5s",
+                        //transition: "transform 0.5s",
                       }}
                       onClick={() => selectPiece(i, j)}
                     >

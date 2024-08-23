@@ -4,7 +4,6 @@ const isWhiteChecked = require("./isWhiteChecked");
 
 const checkEndGameConditions = (board, isWhiteTurn) => {
   const currentTurn = isWhiteTurn ? "white" : "black";
-  //check if move is an en passant
   if (isMaterialDraw(board))
     return { gameOver: true, winner: "none", winType: "material" };
 
@@ -25,31 +24,21 @@ const isMaterialDraw = (_board) => {
 
 const isCheckmateOrStalemate = (_board, _currentTurn) => {
   //_currentTurn is the player who is going to play next
-  // const nextTurn =
-  //   _currentTurn === PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
   const hasMoves = hasAnyMoves(_board, _currentTurn);
   if (_currentTurn == "white") {
     if (!hasMoves) {
       if (isWhiteChecked(_board)) {
-        console.log("game over");
         return { gameOver: true, winner: "black", winType: "checkmate" };
-        //onGameOver(PlayerTurn.BLACK, WinType.CHECKMATE);
       } else {
-        console.log("game over");
         return { gameOver: true, winner: "none", winType: "stalemate" };
-        //onGameOver(PlayerTurn.NONE, WinType.STALEMATE);
       }
     }
   } else {
     if (!hasMoves) {
       if (isBlackChecked(_board)) {
-        console.log("game over");
         return { gameOver: true, winner: "white", winType: "checkmate" };
-        //onGameOver(PlayerTurn.WHITE, WinType.CHECKMATE);
       } else {
-        console.log("game over");
         return { gameOver: true, winner: "none", winType: "stalemate" };
-        //onGameOver(PlayerTurn.NONE, WinType.STALEMATE);
       }
     }
   }

@@ -1,5 +1,6 @@
 const initialBoard = require("../constants/initialBoard");
 const getInitialBoardCopy = () => JSON.parse(JSON.stringify(initialBoard));
+const generateBoardAfterMove = require("../utils/gameLogic/generateBoardAfterMove");
 
 class Rooms {
   constructor() {
@@ -45,10 +46,6 @@ class Rooms {
   }
 
   getPlayersColor(roomCode, playerId) {
-    // return this.data[roomCode].players.indexOf(playerId) === 0
-    //   ? "white"
-    //   : "black";
-
     return this.data[roomCode].players.indexOf(playerId) === 0
       ? "white"
       : this.data[roomCode].players.indexOf(playerId) === 1
@@ -78,6 +75,27 @@ class Rooms {
   updateBoard(roomCode, newBoard) {
     this.data[roomCode].board = newBoard;
     this.data[roomCode].isWhiteTurn = !this.data[roomCode].isWhiteTurn;
+  }
+
+  executeMove(roomCode, moveData) {
+    const from = moveData.from;
+    const to = moveData.to;
+    const board = this.data[roomCode].board;
+
+    if (board[from[0]][from[1]] === "P" && to[0] === 0)
+      this.addPoint(roomCode, "white");
+    if (board[from[0]][from[1]] === "p" && to[0] === 7)
+      this.addPoint(roomCode, "black");
+    const newBoard = generateBoardAfterMove(board, from, to);
+    this.updateBoard(roomCode, newBoard);
+  }
+
+  getGameData(roomCode) {
+    return {
+      board: this.data[roomCode].board,
+      scores: this.data[roomCode].scores,
+      isWhiteTurn: this.data[roomCode].isWhiteTurn,
+    };
   }
 
   addPoint(roomCode, color) {
