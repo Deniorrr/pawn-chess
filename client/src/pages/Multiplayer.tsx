@@ -1,15 +1,14 @@
 import MultiplayerChessboard from "../containers/MultiplayerChessboard.js";
 import { Container, Paper, Typography, Grid, Button } from "@mui/material";
 import { useEffect, useState } from "react";
-//import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PlayerScores from "../components/PlayerScores.js";
 import EndScreenNew from "../components/EndScreenNew";
 import { ChessBoard, ChessCoord } from "../types/ChessBoardTypes.js";
-import { PlayerTurn } from "../types/PlayerTurnEnum";
-import { WinType } from "../types/WinTypeEnum";
-import { useAlert } from "../contexts/AlertContext";
+import { PlayerTurn } from "../types/PlayerTurnType";
+import { WinType } from "../types/WinType";
+//import { useAlert } from "../contexts/AlertContext";
 import { useSocket } from "../contexts/SocketContext";
 
 function Multiplayer() {
@@ -19,9 +18,9 @@ function Multiplayer() {
   const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
   const [displayEndScreen, setDisplayEndScreen] = useState(false);
-  const [winner, setWinner] = useState<PlayerTurn>(PlayerTurn.NONE);
-  const [winType, setWinType] = useState<WinType>(WinType.MATERIAL);
-  const [playerColor, setPlayerColor] = useState<PlayerTurn>(PlayerTurn.NONE);
+  const [winner, setWinner] = useState<PlayerTurn>("none");
+  const [winType, setWinType] = useState<WinType>("material");
+  const [playerColor, setPlayerColor] = useState<PlayerTurn>("none");
 
   // const [position, setPosition] = useState<ChessBoard>([
   //   [" ", " ", " ", " ", "k", " ", " ", " "],
@@ -47,7 +46,7 @@ function Multiplayer() {
 
   const socketInstance = useSocket().socket;
 
-  const addAlert = useAlert();
+  //const addAlert = useAlert();
 
   useEffect(() => {
     socketInstance.emit("getColor");
@@ -62,11 +61,33 @@ function Multiplayer() {
         newBoard: ChessBoard;
         scores: { white: number; black: number };
       }) => {
-        console.log(data);
         setPosition(data.newBoard);
         setWhiteScore(data.scores.white);
         setBlackScore(data.scores.black);
         switchTurn();
+      }
+    );
+
+    socketInstance.on(
+      "gameOver",
+      (data: {
+        endGameConditions: {
+          gameOver: boolean;
+          winner: "white" | "black" | "none";
+          winType: "material" | "checkmate" | "stalemate" | "timeout"; //maybe timeout will be implemented one day
+        };
+        updatedData: {
+          newBoard: ChessBoard;
+          scores: { white: number; black: number };
+        };
+      }) => {
+        setPosition(data.updatedData.newBoard);
+        setWhiteScore(data.updatedData.scores.white);
+        setBlackScore(data.updatedData.scores.black);
+        onGameOver(
+          data.endGameConditions.winner,
+          data.endGameConditions.winType
+        );
       }
     );
 
@@ -89,14 +110,17 @@ function Multiplayer() {
   };
 
   const addPoint = (color: PlayerTurn): void => {
-    if (color === PlayerTurn.WHITE) {
+    if (color === "white") {
       setWhiteScore(whiteScore + 1);
     } else {
       setBlackScore(blackScore + 1);
     }
   };
 
-  const onGameOver = (winner: PlayerTurn, winType: WinType) => {
+  const onGameOver = (
+    winner: "white" | "black" | "none",
+    winType: "material" | "checkmate" | "stalemate" | "timeout"
+  ) => {
     setWinner(winner);
     setWinType(winType);
     setDisplayEndScreen(true);
@@ -123,10 +147,10 @@ function Multiplayer() {
           <Grid container spacing={1} my={1} alignItems={"center"}>
             <Grid item>
               <MultiplayerChessboard
-                currentTurn={isWhiteTurn ? PlayerTurn.WHITE : PlayerTurn.BLACK}
+                currentTurn={isWhiteTurn ? "white" : "black"}
                 board={position}
                 onChangePosition={onChangePosition}
-                onGameOver={onGameOver}
+                //onGameOver={onGameOver}
                 addPoint={addPoint}
                 playerColor={playerColor}
               />

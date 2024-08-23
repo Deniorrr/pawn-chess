@@ -1,4 +1,4 @@
-export const isBlackChecked = (board) => {
+const isBlackChecked = (board) => {
   let blackKingPos = [];
   board.forEach((row, i) => {
     row.forEach((cell, j) => {
@@ -11,3 +11,5 @@ export const isBlackChecked = (board) => {
     if (board[blackKingPos[0] + 1][blackKingPos[1] + 1] === "P") return true;
   return false;
 };
+
+module.exports = isBlackChecked;

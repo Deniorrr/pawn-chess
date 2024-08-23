@@ -1,11 +1,14 @@
-import { generateBoardAfterMove } from "./generateBoardAfterMove.js";
+//import { generateBoardAfterMove } from "./generateBoardAfterMove.js";
+const generateBoardAfterMove = require("./generateBoardAfterMove.js");
 
-import { isWhiteChecked } from "./isWhiteChecked.js";
-import { isBlackChecked } from "./isBlackChecked.js";
+// import { isWhiteChecked } from "./isWhiteChecked.js";
+// import { isBlackChecked } from "./isBlackChecked.js";
+const isWhiteChecked = require("./isWhiteChecked.js");
+const isBlackChecked = require("./isBlackChecked.js");
 
 let piece;
 
-export const findLegalMoves = (i, j, board) => {
+const findLegalMoves = (i, j, board) => {
   let legalMoves = [];
   piece = board[i][j];
   switch (piece) {
@@ -142,3 +145,5 @@ const addMove = (board, moves, from, to, isWhite) => {
   }
   moves.push(to);
 };
+
+module.exports = findLegalMoves;

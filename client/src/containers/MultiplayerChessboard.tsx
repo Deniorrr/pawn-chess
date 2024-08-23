@@ -7,16 +7,15 @@ import p from "../assets/p.svg";
 import pw from "../assets/pw.svg";
 import { findLegalMoves } from "../utils/gameLogic/findLegalMoves.js";
 import { generateBoardAfterMove } from "../utils/gameLogic/generateBoardAfterMove.js";
-import { isWhiteChecked } from "../utils/gameLogic/isWhiteChecked.js";
-import { isBlackChecked } from "../utils/gameLogic/isBlackChecked.js";
+//import { isWhiteChecked } from "../utils/gameLogic/isWhiteChecked.js";
+//import { isBlackChecked } from "../utils/gameLogic/isBlackChecked.js";
 import PropTypes from "prop-types";
 import { ChessBoard, ChessCoord, ChessSquare } from "../types/ChessBoardTypes";
-import { PlayerTurn } from "../types/PlayerTurnEnum";
-import { WinType } from "../types/WinTypeEnum";
+import { PlayerTurn } from "../types/PlayerTurnType";
 
 MultiplayerChessboard.propTypes = {
   currentTurn: PropTypes.string.isRequired,
-  onGameOver: PropTypes.func.isRequired,
+  //onGameOver: PropTypes.func.isRequired,
   addPoint: PropTypes.func.isRequired,
   playerColor: PropTypes.string.isRequired,
 };
@@ -29,7 +28,7 @@ interface ChessboardProps {
     chessboard: ChessBoard
   ) => void;
   board: ChessBoard;
-  onGameOver: (winner: PlayerTurn, winType: WinType) => void;
+  //onGameOver: (winner: PlayerTurn, winType: WinType) => void;
   addPoint: (player: PlayerTurn) => void;
   playerColor: PlayerTurn;
 }
@@ -40,7 +39,7 @@ function MultiplayerChessboard(props: ChessboardProps) {
     onChangePosition,
     board,
     currentTurn,
-    onGameOver,
+    //onGameOver,
     playerColor,
   } = props;
 
@@ -57,11 +56,7 @@ function MultiplayerChessboard(props: ChessboardProps) {
   };
 
   const selectPiece = (row: number, column: number) => {
-    if (
-      playerColor.toString().toUpperCase() !==
-      PlayerTurn[currentTurn].toString().toUpperCase()
-    )
-      return;
+    if (playerColor !== currentTurn) return;
 
     if (areObjectsSame(selectedPiece, [row, column])) {
       setLegalMoves([]);
@@ -69,13 +64,13 @@ function MultiplayerChessboard(props: ChessboardProps) {
     }
     if (selectedPiece === null) {
       if (
-        currentTurn == PlayerTurn.WHITE &&
+        currentTurn == "white" &&
         board[row][column] === board[row][column].toLowerCase()
       ) {
         return;
       }
       if (
-        currentTurn == PlayerTurn.BLACK &&
+        currentTurn == "black" &&
         board[row][column] === board[row][column].toUpperCase()
       ) {
         return;
@@ -93,92 +88,91 @@ function MultiplayerChessboard(props: ChessboardProps) {
     setSelectedPiece(null);
   };
 
-  const hasAnyMoves = (_board: ChessBoard, _currentTurn: PlayerTurn) => {
-    let result = false;
-    if (_currentTurn == PlayerTurn.WHITE) {
-      _board.some((row, i) => {
-        row.some((cell, j) => {
-          if ("PK".includes(cell) && findLegalMoves(i, j, _board).length > 0) {
-            result = true;
-          }
-        });
-      });
-    }
-    if (_currentTurn == PlayerTurn.BLACK) {
-      _board.some((row, i) => {
-        row.some((cell, j) => {
-          if ("pk".includes(cell) && findLegalMoves(i, j, _board).length > 0) {
-            result = true;
-          }
-        });
-      });
-    }
-    return result;
-  };
+  // const hasAnyMoves = (_board: ChessBoard, _currentTurn: PlayerTurn) => {
+  //   let result = false;
+  //   if (_currentTurn == PlayerTurn.WHITE) {
+  //     _board.some((row, i) => {
+  //       row.some((cell, j) => {
+  //         if ("PK".includes(cell) && findLegalMoves(i, j, _board).length > 0) {
+  //           result = true;
+  //         }
+  //       });
+  //     });
+  //   }
+  //   if (_currentTurn == PlayerTurn.BLACK) {
+  //     _board.some((row, i) => {
+  //       row.some((cell, j) => {
+  //         if ("pk".includes(cell) && findLegalMoves(i, j, _board).length > 0) {
+  //           result = true;
+  //         }
+  //       });
+  //     });
+  //   }
+  //   return result;
+  // };
 
-  const isCheckmateOrStalemate = (
-    _board: ChessBoard,
-    _currentTurn: PlayerTurn
-  ) => {
-    const nextTurn =
-      _currentTurn === PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
-    console.log("isCheckmateOrStalemate");
-    const hasMoves = hasAnyMoves(_board, nextTurn);
-    if (nextTurn == PlayerTurn.WHITE) {
-      console.log("has moves", hasMoves);
-      if (!hasMoves) {
-        if (isWhiteChecked(_board)) {
-          console.log("game over");
-          onGameOver(PlayerTurn.BLACK, WinType.CHECKMATE);
-        } else {
-          console.log("game over");
-          onGameOver(PlayerTurn.NONE, WinType.STALEMATE);
-        }
-      }
-    } else {
-      if (!hasMoves) {
-        if (isBlackChecked(_board)) {
-          console.log("game over");
-          onGameOver(PlayerTurn.WHITE, WinType.CHECKMATE);
-        } else {
-          console.log("game over");
-          onGameOver(PlayerTurn.NONE, WinType.STALEMATE);
-        }
-      }
-    }
-  };
+  // const isCheckmateOrStalemate = (
+  //   _board: ChessBoard,
+  //   _currentTurn: PlayerTurn
+  // ) => {
+  //   const nextTurn =
+  //     _currentTurn === PlayerTurn.WHITE ? PlayerTurn.BLACK : PlayerTurn.WHITE;
+  //   const hasMoves = hasAnyMoves(_board, nextTurn);
+  //   if (nextTurn == PlayerTurn.WHITE) {
+  //     console.log("has moves", hasMoves);
+  //     if (!hasMoves) {
+  //       if (isWhiteChecked(_board)) {
+  //         console.log("game over");
+  //         onGameOver(PlayerTurn.BLACK, WinType.CHECKMATE);
+  //       } else {
+  //         console.log("game over");
+  //         onGameOver(PlayerTurn.NONE, WinType.STALEMATE);
+  //       }
+  //     }
+  //   } else {
+  //     if (!hasMoves) {
+  //       if (isBlackChecked(_board)) {
+  //         console.log("game over");
+  //         onGameOver(PlayerTurn.WHITE, WinType.CHECKMATE);
+  //       } else {
+  //         console.log("game over");
+  //         onGameOver(PlayerTurn.NONE, WinType.STALEMATE);
+  //       }
+  //     }
+  //   }
+  // };
 
-  const isMaterialDraw = (_board: ChessBoard) => {
-    const whitePieces = _board
-      .flat()
-      .filter((piece) => "PK".includes(piece)).length;
-    const blackPieces = _board
-      .flat()
-      .filter((piece) => "pk".includes(piece)).length;
-    if (whitePieces === 1 && blackPieces === 1) {
-      onGameOver(PlayerTurn.NONE, WinType.MATERIAL);
-    }
-  };
+  // const isMaterialDraw = (_board: ChessBoard) => {
+  //   const whitePieces = _board
+  //     .flat()
+  //     .filter((piece) => "PK".includes(piece)).length;
+  //   const blackPieces = _board
+  //     .flat()
+  //     .filter((piece) => "pk".includes(piece)).length;
+  //   if (whitePieces === 1 && blackPieces === 1) {
+  //     onGameOver(PlayerTurn.NONE, WinType.MATERIAL);
+  //   }
+  // };
 
   const movePiece = (i: number, j: number) => {
     if (!selectedPiece) return;
     if (board[selectedPiece![0]][selectedPiece![1]] === "P" && i === 0)
       //if pawn reaches the end of the board
-      addPoint(PlayerTurn.WHITE);
+      addPoint("white");
     if (board[selectedPiece![0]][selectedPiece![1]] === "p" && i === 7)
-      addPoint(PlayerTurn.BLACK);
+      addPoint("black");
     const selectedPosition: ChessCoord = [i, j];
     const boardAfterMove = generateBoardAfterMove(
       [...board],
       selectedPiece,
       selectedPosition
     );
-    const _currentTurn = currentTurn;
+    //const _currentTurn = currentTurn;
     onChangePosition(selectedPiece, selectedPosition, boardAfterMove);
     //check end game conditions
 
-    isCheckmateOrStalemate(boardAfterMove, _currentTurn);
-    isMaterialDraw(boardAfterMove);
+    //isCheckmateOrStalemate(boardAfterMove, _currentTurn);
+    //isMaterialDraw(boardAfterMove);
     //
     setSelectedPiece(null);
     setLegalMoves([]);

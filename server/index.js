@@ -16,6 +16,7 @@ const io = new Server(server, {
 
 const rooms = new Rooms();
 const generateBoardAfterMove = require("./utils/gameLogic/generateBoardAfterMove");
+const checkEndGameConditions = require("./utils/gameLogic/checkEndGameConditions");
 
 //backend endpoint naming conventions
 
@@ -80,6 +81,17 @@ io.on("connection", (client) => {
       newBoard,
       scores: rooms.data[roomCode].scores,
     };
+    console.log(
+      checkEndGameConditions(newBoard, rooms.data[roomCode].isWhiteTurn)
+    );
+    const endGameConditions = checkEndGameConditions(
+      newBoard,
+      rooms.data[roomCode].isWhiteTurn
+    );
+    //example return: { gameOver: true, winner: "none", winType: "material" };
+    if (endGameConditions.gameOver) {
+      io.to(roomCode).emit("gameOver", { endGameConditions, updatedData });
+    }
     io.to(roomCode).emit("move", updatedData);
   });
 

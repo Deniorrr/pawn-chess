@@ -22,11 +22,10 @@ export const SocketProvider = ({ children }) => {
   const addAlert = useAlert();
 
   const connectSocket = (roomCode) => {
-    //disconnect from previous socket
     if (socketRef.current) {
       socketRef.current.disconnect();
     }
-    //if (!socketRef.current) {
+
     const newSocket = io.connect(socketUrl, {
       query: { roomCode },
     });

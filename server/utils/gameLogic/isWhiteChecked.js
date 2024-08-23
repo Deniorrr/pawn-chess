@@ -1,4 +1,4 @@
-export const isWhiteChecked = (board) => {
+const isWhiteChecked = (board) => {
   let whiteKingPos = [];
   board.forEach((row, i) => {
     row.forEach((cell, j) => {
@@ -11,3 +11,5 @@ export const isWhiteChecked = (board) => {
     if (board[whiteKingPos[0] - 1][whiteKingPos[1] + 1] === "p") return true;
   return false;
 };
+
+module.exports = isWhiteChecked;

@@ -1,6 +1,6 @@
 import { Backdrop, Button, Grid, Typography } from "@mui/material";
-import { PlayerTurn } from "../types/PlayerTurnEnum";
-import { WinType } from "../types/WinTypeEnum";
+import { PlayerTurn } from "../types/PlayerTurnType";
+import { WinType } from "../types/WinType";
 import { useState, useEffect } from "react";
 
 function EndScreenNew(props: {
@@ -15,7 +15,7 @@ function EndScreenNew(props: {
 
   const generateEndScreenText = (): string => {
     let text = "";
-    if (winner === PlayerTurn.NONE) {
+    if (winner === "none") {
       console.log("white", white, "black", black);
       if (white > black) {
         return (text = "White Wins on Points");
@@ -25,12 +25,12 @@ function EndScreenNew(props: {
       }
       return (text = "Draw");
     }
-    if (winner === PlayerTurn.WHITE) text = "White Wins";
-    if (winner === PlayerTurn.BLACK) text = "Black Wins";
+    if (winner === "white") text = "White Wins";
+    if (winner === "black") text = "Black Wins";
 
-    if (winType === WinType.CHECKMATE) text += " by Checkmate";
-    if (winType === WinType.STALEMATE) text += " by Stalemate";
-    if (winType === WinType.MATERIAL) {
+    if (winType === "checkmate") text += " by Checkmate";
+    if (winType === "stalemate") text += " by Stalemate";
+    if (winType === "material") {
       text += " by Material ";
     }
     return text;
