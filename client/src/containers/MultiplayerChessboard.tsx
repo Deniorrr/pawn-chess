@@ -1,4 +1,4 @@
-import { Button, Grid, Paper } from "@mui/material";
+import { Button, Grid, Paper, Box, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { brown } from "@mui/material/colors";
 import k from "../assets/k.svg";
@@ -130,6 +130,41 @@ function MultiplayerChessboard(props: ChessboardProps) {
     }
   };
 
+  const renderDescription = (i: number, j: number) => {
+    const letters = "ABCDEFGH";
+    const numberElement = (
+      <Box
+        style={{ position: "absolute", top: 0, left: 0, margin: "5px" }}
+        color={(i + j) % 2 === 0 ? "gray" : "white"}
+      >
+        <Typography sx={{ fontWeight: "bold" }}>{`${8 - i}`}</Typography>
+      </Box>
+    );
+    const letterElement = (
+      <Box
+        style={{ position: "absolute", bottom: 0, right: 0, margin: "5px" }}
+        sx={{ fontWeight: "bold" }}
+        color={(i + j) % 2 === 0 ? "gray" : "white"}
+      >
+        <Typography sx={{ fontWeight: "bold" }}>{`${letters[j]}`}</Typography>
+      </Box>
+    );
+    if (isBoardRotated) {
+      return (
+        <>
+          {j === 7 && numberElement}
+          {i === 0 && letterElement}
+        </>
+      );
+    }
+    return (
+      <>
+        {j === 0 && numberElement}
+        {i === 7 && letterElement}
+      </>
+    );
+  };
+
   const rotateChessboard = () => {
     setIsBoardRotated(!isBoardRotated);
   };
@@ -191,10 +226,13 @@ function MultiplayerChessboard(props: ChessboardProps) {
                         boxSizing: "border-box",
                         border: generateBorder(i, j),
                         transform: isBoardRotated ? "rotate(-180deg)" : "none",
+                        position: "relative",
                         //transition: "transform 0.5s",
                       }}
                       onClick={() => selectPiece(i, j)}
                     >
+                      {renderDescription(i, j)}
+
                       {renderPiece(piece)}
                     </Paper>
                   </Grid>

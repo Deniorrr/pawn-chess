@@ -94,7 +94,7 @@ function Multiplayer() {
     return () => {
       socketInstance.disconnect();
     };
-  }, []);
+  }, []); // eslint-disable-line
 
   const switchTurn = () => {
     setIsWhiteTurn((prevIsWhiteTurn) => !prevIsWhiteTurn);
@@ -117,10 +117,7 @@ function Multiplayer() {
     }
   };
 
-  const onGameOver = (
-    winner: "white" | "black" | "none",
-    winType: "material" | "checkmate" | "stalemate" | "timeout"
-  ) => {
+  const onGameOver = (winner: PlayerTurn, winType: WinType) => {
     setWinner(winner);
     setWinType(winType);
     setDisplayEndScreen(true);
