@@ -3,6 +3,7 @@ import { Container, Paper, Typography, Grid, Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useAlert } from "../contexts/AlertContext";
 import { useSocket } from "../contexts/SocketContext";
+import Chat from "../containers/Chat";
 
 function MultiplayerLobby() {
   const { roomCode } = useParams();
@@ -29,6 +30,10 @@ function MultiplayerLobby() {
       setPlayerNumber(data);
     });
 
+    socket.on("playerJoined", () => {
+      addAlert("A player has joined the game");
+    });
+
     socket.on("gameStarted", () => {
       addAlert("game started", "info");
       navigate("/multiplayer/game/" + roomCode);
@@ -39,59 +44,65 @@ function MultiplayerLobby() {
       socket.off("playerNumber");
       socket.off("gameStarted");
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const switchReadyState = () => {
     socketInstance.emit("changedLobbyState", {});
   };
 
   return (
-    <Container style={{ marginTop: "23px" }}>
-      <Paper elevation={12} style={{ padding: 20, backgroundColor: "#bcd2da" }}>
-        <Typography variant="h3" gutterBottom textAlign={"center"}>
-          Local Game
-        </Typography>
+    <>
+      <Container style={{ marginTop: "23px" }}>
+        <Paper
+          elevation={12}
+          style={{ padding: 20, backgroundColor: "#bcd2da" }}
+        >
+          <Typography variant="h3" gutterBottom textAlign={"center"}>
+            Local Game
+          </Typography>
 
-        <Grid container rowGap={10} marginTop={10}>
-          <Grid item xs={12}>
-            <Typography variant="h5" gutterBottom textAlign={"center"}>
-              Room Code: {roomCode}
-            </Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h5" gutterBottom textAlign={"center"}>
-              Player1 {playerNumber === 1 ? "(You)" : ""}
-            </Typography>
-            <Typography variant="h5" gutterBottom textAlign={"center"}>
-              {lobbyState.isPlayer1Ready ? "ready" : "not ready"}
-            </Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h5" gutterBottom textAlign={"center"}>
-              Player2 {playerNumber === 2 ? "(You)" : ""}
-            </Typography>
-            <Typography variant="h5" gutterBottom textAlign={"center"}>
-              {lobbyState.isPlayer2Ready ? "ready" : "not ready"}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} display={"flex"} justifyContent={"center"}>
-            <Button variant="contained" onClick={() => switchReadyState()}>
-              {playerNumber === 1
-                ? lobbyState.isPlayer1Ready
+          <Grid container rowGap={10} marginTop={10}>
+            <Grid item xs={12}>
+              <Typography variant="h5" gutterBottom textAlign={"center"}>
+                Room Code: {roomCode}
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h5" gutterBottom textAlign={"center"}>
+                Player1 {playerNumber === 1 ? "(You)" : ""}
+              </Typography>
+              <Typography variant="h5" gutterBottom textAlign={"center"}>
+                {lobbyState.isPlayer1Ready ? "ready" : "not ready"}
+              </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h5" gutterBottom textAlign={"center"}>
+                Player2 {playerNumber === 2 ? "(You)" : ""}
+              </Typography>
+              <Typography variant="h5" gutterBottom textAlign={"center"}>
+                {lobbyState.isPlayer2Ready ? "ready" : "not ready"}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} display={"flex"} justifyContent={"center"}>
+              <Button variant="contained" onClick={() => switchReadyState()}>
+                {playerNumber === 1
+                  ? lobbyState.isPlayer1Ready
+                    ? "Cancel"
+                    : "Ready"
+                  : playerNumber === 2
+                  ? lobbyState.isPlayer2Ready
+                    ? "Cancel"
+                    : "Ready"
+                  : lobbyState.isPlayer2Ready
                   ? "Cancel"
-                  : "Ready"
-                : playerNumber === 2
-                ? lobbyState.isPlayer2Ready
-                  ? "Cancel"
-                  : "Ready"
-                : lobbyState.isPlayer2Ready
-                ? "Cancel"
-                : "Ready"}
-            </Button>
+                  : "Ready"}
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
-      </Paper>
-    </Container>
+        </Paper>
+      </Container>
+      <Chat />
+    </>
   );
 }
 

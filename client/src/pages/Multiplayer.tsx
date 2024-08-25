@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PlayerScores from "../components/PlayerScores.js";
 import EndScreenNew from "../components/EndScreenNew";
+import Chat from "../containers/Chat.js";
 import { ChessBoard, ChessCoord } from "../types/ChessBoardTypes.js";
 import { PlayerTurn } from "../types/PlayerTurnType";
 import { WinType } from "../types/WinType";
@@ -171,6 +172,7 @@ function Multiplayer() {
           setDisplayEndScreen={setDisplayEndScreen}
         />
       )}
+      <Chat />
     </>
   );
 }

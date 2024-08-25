@@ -37,6 +37,7 @@ io.on("connection", (client) => {
   client.emit("changedLobbyState", rooms.data[roomCode].lobbyState);
   //send to player the color
   client.emit("playerNumber", playerNumber);
+  client.broadcast.to(roomCode).emit("playerJoined");
 
   client.on("changedLobbyState", () => {
     const roomCode = rooms.findRoom(client.id);
@@ -51,6 +52,21 @@ io.on("connection", (client) => {
     const roomCode = rooms.findRoom(client.id);
     const color = rooms.getPlayersColor(roomCode, client.id);
     client.emit("getColor", color);
+  });
+
+  client.on("message", (text) => {
+    if (text === "") return;
+    const roomCode = rooms.findRoom(client.id);
+    const playerColor = rooms.getPlayersColor(roomCode, client.id);
+    const messageTime = new Date().toLocaleTimeString();
+    rooms.addMessage(roomCode, { text, playerColor, messageTime });
+    io.to(roomCode).emit("message", { text, playerColor, messageTime });
+  });
+
+  client.on("getMessages", () => {
+    const roomCode = rooms.findRoom(client.id);
+    const messages = rooms.getMessages(roomCode);
+    client.emit("getMessages", messages);
   });
 
   client.on("move", (moveData) => {

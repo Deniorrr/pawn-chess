@@ -18,11 +18,20 @@ class Rooms {
       isWhiteTurn: true,
       board: getInitialBoardCopy(),
       scores: { white: 0, black: 0 },
+      messages: [],
     };
   }
 
   addPlayer(roomCode, player) {
     this.data[roomCode].players.push(player);
+  }
+
+  addMessage(roomCode, message) {
+    this.data[roomCode].messages.push(message);
+  }
+
+  getMessages(roomCode) {
+    return this.data[roomCode].messages;
   }
 
   findRoom(playerId) {
