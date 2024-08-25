@@ -23,6 +23,8 @@ function Multiplayer() {
   const [winType, setWinType] = useState<WinType>("material");
   const [playerColor, setPlayerColor] = useState<PlayerTurn>("none");
 
+  const [isBoardRotated, setIsBoardRotated] = useState(false);
+
   // const [position, setPosition] = useState<ChessBoard>([
   //   [" ", " ", " ", " ", "k", " ", " ", " "],
   //   ["p", "p", "p", "p", "p", "p", "p", "p"],
@@ -54,6 +56,7 @@ function Multiplayer() {
 
     socketInstance.on("getColor", (color: PlayerTurn) => {
       setPlayerColor(color);
+      color === "black" && setIsBoardRotated(true);
     });
 
     socketInstance.on(
@@ -124,6 +127,10 @@ function Multiplayer() {
     setDisplayEndScreen(true);
   };
 
+  const switchBoardRotation = () => {
+    setIsBoardRotated((prev) => !prev);
+  };
+
   return (
     <>
       <Button
@@ -151,6 +158,8 @@ function Multiplayer() {
                 //onGameOver={onGameOver}
                 addPoint={addPoint}
                 playerColor={playerColor}
+                isBoardRotated={isBoardRotated}
+                switchBoardRotation={switchBoardRotation}
               />
             </Grid>
             <Grid item>
@@ -159,6 +168,7 @@ function Multiplayer() {
                 blackScore={blackScore}
                 isWhiteTurn={isWhiteTurn}
                 playerColor={playerColor.toString()}
+                isBoardRotated={isBoardRotated}
               />
             </Grid>
           </Grid>

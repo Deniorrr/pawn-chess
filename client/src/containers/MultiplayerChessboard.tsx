@@ -1,5 +1,5 @@
 import { Button, Grid, Paper, Box, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { brown } from "@mui/material/colors";
 import k from "../assets/k.svg";
 import kw from "../assets/kw.svg";
@@ -27,16 +27,20 @@ interface ChessboardProps {
   board: ChessBoard;
   addPoint: (player: PlayerTurn) => void;
   playerColor: PlayerTurn;
+  isBoardRotated: boolean;
+  switchBoardRotation: () => void;
 }
 
 function MultiplayerChessboard(props: ChessboardProps) {
-  const { addPoint, onChangePosition, board, currentTurn, playerColor } = props;
-
-  const [isBoardRotated, setIsBoardRotated] = useState(false);
-
-  useEffect(() => {
-    playerColor === "black" && setIsBoardRotated(true);
-  }, [playerColor]);
+  const {
+    addPoint,
+    onChangePosition,
+    board,
+    currentTurn,
+    playerColor,
+    isBoardRotated,
+    switchBoardRotation,
+  } = props;
 
   const [legalMoves, setLegalMoves] = useState<ChessCoord[]>([]);
 
@@ -166,7 +170,7 @@ function MultiplayerChessboard(props: ChessboardProps) {
   };
 
   const rotateChessboard = () => {
-    setIsBoardRotated(!isBoardRotated);
+    switchBoardRotation();
   };
 
   return (

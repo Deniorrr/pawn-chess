@@ -1,4 +1,4 @@
-import { Paper, Typography } from "@mui/material";
+import { Paper, Typography, Box } from "@mui/material";
 import { brown } from "@mui/material/colors";
 
 function PlayerScores(props: {
@@ -6,10 +6,15 @@ function PlayerScores(props: {
   blackScore: number;
   isWhiteTurn: boolean;
   playerColor: string;
+  isBoardRotated: boolean;
 }) {
-  const { whiteScore, blackScore, isWhiteTurn, playerColor } = props;
+  const { whiteScore, blackScore, isWhiteTurn, playerColor, isBoardRotated } =
+    props;
   return (
-    <>
+    <Box
+      display={"flex"}
+      flexDirection={isBoardRotated ? "column-reverse" : "column"}
+    >
       <Paper
         elevation={isWhiteTurn ? 3 : 24}
         aria-label="score"
@@ -36,6 +41,7 @@ function PlayerScores(props: {
           display: "flex",
           alignItems: "center",
           paddingRight: "10px",
+          marginBottom: "10px",
           transform: isWhiteTurn ? "scale(1.05)" : "scale(1)",
           backgroundColor: isWhiteTurn ? brown[200] : brown[100],
         }}
@@ -50,7 +56,7 @@ function PlayerScores(props: {
           White player {playerColor == "white" && "(you)"}
         </Typography>
       </Paper>
-    </>
+    </Box>
   );
 }
 

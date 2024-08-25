@@ -1,7 +1,8 @@
-import { Box, Typography } from "@mui/material";
+import { Box, TextField, Typography, Paper } from "@mui/material";
 import { useSocket } from "../contexts/SocketContext";
 import { useEffect, useState, useRef } from "react";
 import { PlayerTurn } from "../types/PlayerTurnType";
+import { brown } from "@mui/material/colors";
 
 type Message = {
   text: string;
@@ -12,10 +13,10 @@ type Message = {
 function Chat() {
   const socketInstance = useSocket().socket;
   const [messages, setMessages] = useState<Message[]>([]);
+  const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleMessage = (message: Message) => {
-    console.log(message);
     setMessages((prev) => [...prev, message]);
   };
 
@@ -40,39 +41,72 @@ function Chat() {
     };
   }, [socketInstance]);
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      socketInstance.emit("message", inputValue);
+      setInputValue("");
+    }
+  };
+
   return (
-    <Box position={"fixed"} bottom={0} right={0}>
+    <Paper
+      style={{
+        width: "300px",
+        position: "fixed",
+        bottom: 15,
+        right: 15,
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: brown[100],
+      }}
+      elevation={12}
+    >
+      <Paper
+        style={{
+          backgroundColor: brown[200],
+        }}
+      >
+        <Typography variant="h5" style={{ textAlign: "center" }}>
+          Chat
+        </Typography>
+      </Paper>
       <Box
         style={{
           height: "300px",
-          width: "300px",
           overflow: "auto",
-          backgroundColor: "#ffffff44",
+          overflowY: "scroll",
+          padding: "5px",
         }}
       >
         {messages.map((message, index) => (
           <Box key={index}>
-            <Box display="flex" alignItems={"center"} gap={1}>
-              <Typography variant="body2">{message.messageTime} </Typography>
-              <Typography variant="body2"> [{message.playerColor}]</Typography>
-              <Typography variant="body1">{message.text}</Typography>
-            </Box>
+            <Typography
+              variant="body2"
+              style={{
+                wordWrap: "break-word",
+              }}
+            >
+              {message.messageTime} [{message.playerColor}]{" "}
+              <span style={{ fontWeight: "bold" }}>{message.text}</span>
+            </Typography>
           </Box>
         ))}
         <div ref={messagesEndRef} />
       </Box>
-      <input
-        style={{ width: "300px" }}
+      <TextField
+        hiddenLabel
+        variant="filled"
         type="text"
-        onKeyPress={(e) => {
-          if (e.key === "Enter") {
-            if (e.target.value === "") return;
-            socketInstance.emit("message", e.target.value);
-            e.target.value = "";
-          }
+        size="small"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        style={{
+          margin: "10px",
+          backgroundColor: brown[200],
         }}
       />
-    </Box>
+    </Paper>
   );
 }
 
