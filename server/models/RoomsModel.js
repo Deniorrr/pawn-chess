@@ -43,7 +43,7 @@ class Rooms {
 
   generateRoomCode() {
     do {
-      const roomCode = Math.random().toString(36).substr(2, 2);
+      const roomCode = Math.random().toString(36).substr(2, 4);
       if (!this.roomExists(roomCode)) {
         return roomCode;
       }
