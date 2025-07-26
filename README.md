@@ -16,11 +16,11 @@ but the pawns disappear after getting there. The goal is to end the game with mo
 
 
 ## Tech stack
-* [![TypeScript][TypeScript]][TypeScript-url]
-* [![React.js][React.js]][React-url]
-* [![Node.js][Node.js]][Node-url]
-* [![Express.js][Express.js]][Express-url]
-* [![Socket.io][Socket.io]][Socket-url]
+[![TypeScript][TypeScript]][TypeScript-url]
+[![React.js][React.js]][React-url]
+[![Node.js][Node.js]][Node-url]
+[![Express.js][Express.js]][Express-url]
+[![Socket.io][Socket.io]][Socket-url]
 
 This project contains a frontend app and a backend server. The server is used for the online game mode. Additionally the **Game vs Bot** gamemode uses an external API to handle the bot moves - https://stockfish.online/
 
